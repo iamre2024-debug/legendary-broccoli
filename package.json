@@ -1,7 +1,7 @@
 {
   "name": "fraud-academy-workstation",
   "private": true,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "module",
   "description": "Fraud Academy is a fictional React + Vite + PWA training workstation for fraud, disputes, payroll, BEC, credit risk, and identity investigations.",
   "scripts": {
@@ -15,5 +15,7 @@
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
-  "devDependencies": {}
+  "devDependencies": {
+    "vite-plugin-pwa": "^0.18.0"
+  }
 }
