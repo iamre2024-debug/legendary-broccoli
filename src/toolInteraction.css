@@ -1,0 +1,20 @@
+.faToolSearchPanel { display: grid; gap: 13px; }
+.faToolSearch { border: 1px solid var(--fa-line); border-radius: 999px; background: rgba(255,255,255,.07); padding: 12px 14px; display: flex; align-items: center; gap: 10px; box-shadow: inset 0 0 18px rgba(255,79,216,.06); }
+.faToolSearch span { color: var(--fa-cyan); }
+.faToolSearch input { width: 100%; color: var(--fa-ink); background: transparent; border: 0; outline: 0; }
+.faSearchResults, .faSignalGrid, .faReportMeta, .faReportSections { display: grid; gap: 12px; }
+.faSearchResults { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.faSignalGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.faReportMeta { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.faReportSections { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.faSearchHit, .faSignalCard, .faReportSection { border: 1px solid var(--fa-line); border-radius: 24px; background: rgba(255,255,255,.055); padding: 13px; position: relative; overflow: hidden; }
+.faSearchHit:after, .faSignalCard:after, .faReportSection:after { content: '✧'; position: absolute; right: 12px; top: 9px; color: rgba(255,216,251,.28); }
+.faSearchHit span { color: var(--fa-cyan); font-size: 11px; text-transform: uppercase; letter-spacing: .11em; font-weight: 800; }
+.faSearchHit strong, .faReportSection h4 { margin: 2px 0 0; }
+.faSearchHit p, .faSignalCard li, .faReportSection li { color: var(--fa-muted); line-height: 1.5; }
+.faSignalCard ul, .faReportSection ul { margin: 9px 0 0; padding-left: 1.1rem; }
+.faReportShell { display: grid; gap: 14px; }
+.faReportSection h4 { color: #ffd6f6; }
+.faRightRail small { display: block; color: var(--fa-muted); margin-top: 6px; line-height: 1.35; }
+.faMissing { padding: 10px 12px; border-radius: 18px; border: 1px solid var(--fa-line); background: rgba(255,255,255,.05); color: var(--fa-muted); }
+@media (max-width: 780px) { .faSearchResults, .faSignalGrid, .faReportMeta, .faReportSections { grid-template-columns: 1fr; } }
