@@ -1,0 +1,19 @@
+{
+  "name": "Fraud Academy Workstation",
+  "short_name": "Fraud Academy",
+  "description": "A fictional fraud investigation training workstation.",
+  "start_url": "/legendary-broccoli/",
+  "scope": "/legendary-broccoli/",
+  "display": "standalone",
+  "background_color": "#0b0618",
+  "theme_color": "#170b2e",
+  "orientation": "portrait-primary",
+  "icons": [
+    {
+      "src": "/legendary-broccoli/icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}
