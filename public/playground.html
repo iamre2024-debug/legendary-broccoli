@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#130922" />
+  <title>Fraud Academy Mini Workstation</title>
+  <style>
+    :root {
+      --bg: #090614;
+      --panel: rgba(28, 18, 50, .74);
+      --panel-strong: rgba(48, 25, 88, .88);
+      --ink: #fff8ff;
+      --muted: #cdbce7;
+      --pink: #ff4fd8;
+      --violet: #a960ff;
+      --cyan: #57e9ff;
+      --mint: #9effd2;
+      --danger: #ff7d95;
+      --line: rgba(255,255,255,.14);
+      --shadow: 0 0 34px rgba(169,96,255,.25), inset 0 0 26px rgba(255,255,255,.04);
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background:
+        radial-gradient(circle at 18% 12%, rgba(255,79,216,.28), transparent 27rem),
+        radial-gradient(circle at 82% 4%, rgba(87,233,255,.18), transparent 24rem),
+        radial-gradient(circle at 52% 88%, rgba(169,96,255,.22), transparent 25rem),
+        linear-gradient(145deg, #070511, #130922 48%, #080614);
+      overflow-x: hidden;
+    }
+    body:before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(255,255,255,.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.025) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 80%);
+    }
+    button, select, textarea { font: inherit; }
+    .app { display: grid; grid-template-columns: 275px minmax(0, 1fr) 330px; min-height: 100vh; gap: 18px; padding: 18px; position: relative; z-index: 1; }
+    .glass { border: 1px solid var(--line); background: var(--panel); box-shadow: var(--shadow); border-radius: 28px; backdrop-filter: blur(22px); }
+    .sidebar, .rail { position: sticky; top: 18px; height: calc(100vh - 36px); padding: 18px; overflow: auto; }
+    .brand { display: flex; align-items: center; gap: 12px; margin-bottom: 18px; }
+    .moon { width: 46px; height: 46px; border-radius: 16px; display: grid; place-items: center; background: linear-gradient(135deg, var(--pink), var(--violet)); box-shadow: 0 0 22px rgba(255,79,216,.45); font-size: 24px; }
+    h1, h2, h3 { margin: 0; }
+    h1 { font-size: 19px; line-height: 1.05; }
+    h2 { font-size: clamp(27px, 4vw, 48px); letter-spacing: -.04em; }
+    h3 { font-size: 18px; }
+    p { color: var(--muted); line-height: 1.55; }
+    .tiny { color: var(--muted); font-size: 12px; }
+    .case-pill { padding: 14px; border-radius: 20px; background: rgba(255,255,255,.06); border: 1px solid var(--line); margin-bottom: 16px; }
+    .nav { display: grid; gap: 8px; }
+    .nav button, .btn, .case-card, .tool-card, .indicator { border: 1px solid var(--line); color: var(--ink); background: rgba(255,255,255,.065); border-radius: 18px; padding: 12px 14px; cursor: pointer; transition: .18s ease; text-align: left; }
+    .nav button:hover, .btn:hover, .case-card:hover, .tool-card:hover, .indicator:hover { transform: translateY(-1px); border-color: rgba(255,79,216,.55); box-shadow: 0 0 18px rgba(255,79,216,.17); }
+    .nav button.active, .btn.primary, .case-card.active, .indicator.selected { background: linear-gradient(135deg, rgba(255,79,216,.28), rgba(169,96,255,.24)); border-color: rgba(255,79,216,.62); }
+    .main { display: grid; grid-template-rows: auto minmax(0, 1fr); gap: 18px; }
+    .topbar { padding: 16px; display: flex; gap: 12px; align-items: center; justify-content: space-between; }
+    .search { flex: 1; min-width: 0; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.06); padding: 12px 14px; color: var(--muted); }
+    .stage { padding: 20px; overflow: auto; min-height: 0; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(260px, .7fr); gap: 16px; align-items: stretch; margin-bottom: 18px; }
+    .hero-card { padding: 24px; border-radius: 28px; background: linear-gradient(135deg, rgba(255,79,216,.18), rgba(87,233,255,.08)); border: 1px solid var(--line); }
+    .luna { padding: 20px; border-radius: 28px; background: rgba(255,255,255,.07); border: 1px solid var(--line); }
+    .luna-face { font-size: 44px; margin-bottom: 8px; }
+    .grid { display: grid; gap: 14px; }
+    .grid.two { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .grid.three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .card { padding: 18px; border-radius: 24px; background: rgba(255,255,255,.06); border: 1px solid var(--line); }
+    .case-card strong, .tool-card strong { display: block; margin: 8px 0 4px; }
+    .chip-row { display: flex; gap: 8px; flex-wrap: wrap; }
+    .chip { display: inline-flex; align-items: center; gap: 6px; border-radius: 999px; padding: 6px 10px; font-size: 12px; color: var(--ink); border: 1px solid var(--line); background: rgba(255,255,255,.07); }
+    .chip.pink { border-color: rgba(255,79,216,.55); color: #ffd6f6; }
+    .chip.cyan { border-color: rgba(87,233,255,.55); color: #d8faff; }
+    .chip.mint { border-color: rgba(158,255,210,.55); color: #eafff5; }
+    .row { display: flex; gap: 10px; flex-wrap: wrap; align-items: center; }
+    .btn { display: inline-flex; justify-content: center; align-items: center; gap: 8px; text-align: center; }
+    .btn.primary { font-weight: 800; }
+    .btn.full { width: 100%; }
+    .section-head { display: flex; justify-content: space-between; gap: 12px; align-items: start; margin: 0 0 14px; }
+    .table { display: grid; gap: 8px; }
+    .record { display: grid; grid-template-columns: 160px 1fr; gap: 10px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.052); border: 1px solid var(--line); }
+    .record b { color: #fff; }
+    .doc { padding: 15px; border-radius: 20px; border: 1px solid var(--line); background: linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,.04)); }
+    .doc h4 { margin: 0 0 8px; }
+    .doc-preview { margin-top: 10px; border-radius: 14px; padding: 12px; background: #f7f0ff; color: #1b1230; font-family: ui-monospace, SFMono-Regular, Menlo, monospace; font-size: 12px; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
+    textarea { width: 100%; min-height: 120px; resize: vertical; border: 1px solid var(--line); border-radius: 18px; background: rgba(255,255,255,.07); color: var(--ink); padding: 14px; outline: none; }
+    .progress { height: 10px; border-radius: 99px; background: rgba(255,255,255,.08); overflow: hidden; }
+    .progress div { height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--pink), var(--cyan)); width: 0%; }
+    .hidden { display: none !important; }
+    .mobile-toggle { display: none; }
+    .footer-actions { position: sticky; bottom: 0; padding-top: 14px; background: linear-gradient(to top, rgba(9,6,20,.95), transparent); }
+    .spark { position: fixed; pointer-events: none; opacity: .65; animation: float 8s linear infinite; }
+    @keyframes float { from { transform: translateY(18px); } 50% { transform: translateY(-18px); } to { transform: translateY(18px); } }
+    @media (max-width: 1060px) { .app { grid-template-columns: 1fr; padding: 12px; } .sidebar, .rail { position: relative; height: auto; top: auto; } .sidebar.closed { display: none; } .mobile-toggle { display: inline-flex; } .hero { grid-template-columns: 1fr; } .grid.three, .grid.two { grid-template-columns: 1fr; } .topbar { flex-wrap: wrap; } .search { order: 3; width: 100%; flex-basis: 100%; } .record { grid-template-columns: 1fr; } }
+  </style>
+</head>
+<body>
+  <div class="spark" style="left:8%;top:12%">✦</div>
+  <div class="spark" style="left:72%;top:18%;animation-delay:2s">♡</div>
+  <div class="spark" style="left:88%;top:70%;animation-delay:4s">✧</div>
+
+  <div class="app">
+    <aside id="sidebar" class="sidebar glass">
+      <div class="brand"><div class="moon">☾</div><div><h1>Fraud Academy</h1><div class="tiny">Mini Workstation Playground</div></div></div>
+      <div class="case-pill"><span class="chip cyan">Active Case</span><strong id="sideTitle">Loading...</strong><div class="tiny" id="sideSub"></div></div>
+      <nav class="nav" id="nav"></nav>
+    </aside>
+
+    <main class="main">
+      <header class="topbar glass">
+        <button class="btn mobile-toggle" onclick="toggleNav()">☰ Menu</button>
+        <div class="search">⌕ Search cases, tools, reports, evidence...</div>
+        <button class="btn" onclick="generateCase()">Generate claim ✨</button>
+        <button class="btn" onclick="resetPlayground()">Reset</button>
+      </header>
+      <section class="stage glass" id="stage"></section>
+    </main>
+
+    <aside class="rail glass">
+      <div class="section-head"><div><span class="chip pink">Luna Online</span><h3>Senior Desk</h3></div></div>
+      <p id="lunaText">Review the evidence first. I will not reveal the answer until you make a determination.</p>
+      <div class="card">
+        <div class="row" style="justify-content:space-between"><strong>Case Progress</strong><span id="pct">0%</span></div>
+        <div class="progress"><div id="bar"></div></div>
+      </div>
+      <div class="card"><strong>Reviewed Tools</strong><p id="reviewedList">None yet.</p></div>
+      <div class="card"><strong>Current Rule</strong><p>Evidence pages show records only. Determination and coaching unlock after you submit.</p></div>
+    </aside>
+  </div>
+
+  <script>
+    const cases = [
+      {
+        id: 'FA-ATO-7421', lane: 'ATO', title: 'Account Takeover Claim', subtype: 'SIM swap and profile change before transfer', priority: 'High', exposure: '$4,820.00',
+        summary: 'Customer reports being locked out of online banking after receiving several security alerts. The profile phone number changed before a new external account was added and funds were transferred.',
+        intake: [['First noticed', 'After a declined debit card attempt at 7:40 PM'], ['Locked out', 'Yes, password no longer worked'], ['MFA alerts', 'SMS codes received earlier that day'], ['Shared code', 'Customer states they did not share a code'], ['Recognize device/location', 'Does not recognize Android device from Phoenix, AZ']],
+        customer: [['Name', 'Marisol Grant'], ['Customer since', '2019'], ['Normal login area', 'Dallas, TX'], ['Trusted device', 'iPhone 14, Safari'], ['Recent profile change', 'Phone changed 2 hours before transfer'], ['Products', 'Checking, Savings, Debit, Digital Banking']],
+        tools: ['Login History', 'MFA History', 'Device Intelligence', 'IP Intelligence', 'Financial Investigation', 'Link Analysis'],
+        evidence: [
+          ['Login History Report', '2026-07-04 17:22: first-seen Android login from Phoenix. Password reset completed. MFA delivered to newly changed phone.'],
+          ['Device Fingerprint Report', 'New device, first seen during loss window, no prior trusted history, browser timezone mismatch.'],
+          ['Financial Activity Report', 'External account added 18 minutes before transfer. Transfer sent to fintech checking account first seen same day.']
+        ],
+        suspicious: ['First-seen device near loss event', 'MFA sent to newly changed phone', 'Password reset before money movement'],
+        normal: ['Customer reported quickly', 'No prior similar ATO claims'],
+        options: ['Support Customer Claim', 'Do Not Support Customer Claim', 'Insufficient Evidence', 'Escalate Investigation'], correct: 'Support Customer Claim',
+        debrief: 'Strong ATO pattern: profile phone change, new device, password reset, and external transfer in one sequence. The key evidence is the order of events.'
+      },
+      {
+        id: 'FA-CB-1908', lane: 'FRAUD_CHARGEBACK', title: 'Fraud Chargeback Claim', subtype: 'Lost card retail use', priority: 'Medium', exposure: '$612.44',
+        summary: 'Customer states their debit card was lost after grocery shopping. Two retail purchases posted later that evening at stores the customer does not recognize.',
+        intake: [['Was card lost or stolen?', 'Lost'], ['Last valid transaction', 'FreshMart Grocery, 2:16 PM'], ['When noticed missing?', '8:30 PM'], ['PIN written on card?', 'No'], ['Anyone else had access?', 'No']],
+        customer: [['Name', 'Devon Lewis'], ['Card status', 'Closed after report'], ['Prior disputes', 'One prior merchant non-response'], ['Normal spending', 'Groceries, fuel, pharmacy'], ['Wallet status', 'No active wallet token']],
+        tools: ['Transaction Details', 'Authorization Review', 'Merchant Evidence', 'Prior Claims', 'Reason Code Guide'],
+        evidence: [
+          ['Authorization Review', 'Both disputed transactions were card-present chip fallback to magstripe. No PIN. Different store from normal pattern.'],
+          ['Merchant Evidence', 'Merchant provided receipt with signature that does not resemble cardholder name. No CCTV available.'],
+          ['Transaction Timeline', 'Last valid grocery purchase 2:16 PM. Disputed transactions 6:42 PM and 7:05 PM. Card reported lost 8:42 PM.']
+        ],
+        suspicious: ['Transactions after stated loss time', 'Merchant signature mismatch', 'Unusual merchant pattern'],
+        normal: ['Customer had card before loss', 'Report made same day'],
+        options: ['Pay Claim', 'Deny Claim', 'Partial Pay', 'Request More Evidence', 'Escalate Dispute Review'], correct: 'Pay Claim',
+        debrief: 'The timeline and authorization data fit a lost-card fraud scenario. No PIN or known-device issue needed unless the evidence points that way.'
+      },
+      {
+        id: 'FA-NFCB-5520', lane: 'NON_FRAUD_CHARGEBACK', title: 'Non-Fraud Chargeback Claim', subtype: 'Taxi incorrect amount in Mexico', priority: 'Low', exposure: '$50.00',
+        summary: 'Customer reports a taxi in Mexico quoted the equivalent of $20.00, but the final posted amount was $50.00. Customer handed the card to the driver and noticed the higher amount later.',
+        intake: [['Quoted amount', '$20.00 equivalent'], ['Posted amount', '$50.00'], ['Handed card to merchant?', 'Yes'], ['Received receipt?', 'No'], ['Merchant contacted?', 'No working contact found'], ['Was final amount shown?', 'Customer says no']],
+        customer: [['Name', 'Alyssa Romero'], ['Travel note', 'Mexico travel alert active'], ['Card possession', 'Had card before and after ride'], ['Merchant history', 'No prior taxi claims'], ['Wallet status', 'Not relevant to this case']],
+        tools: ['Transaction Details', 'Receipt / Invoice', 'Merchant Evidence', 'Terms / Policy Review', 'Reason Code Guide'],
+        evidence: [
+          ['Transaction Details', 'Merchant category: taxi/limousine. Clearing amount $50.00. Authorization amount unavailable due to offline capture.'],
+          ['Merchant Evidence', 'No receipt provided. Descriptor matches travel area and date.'],
+          ['Reason Code Guide', 'Focus on incorrect amount, receipt, merchant disclosure, and customer authorization of final amount.']
+        ],
+        suspicious: ['Final amount not clearly disclosed', 'No receipt provided'],
+        normal: ['Customer admits receiving service', 'Card was not lost or stolen'],
+        options: ['Pay Claim', 'Deny Claim', 'Partial Pay', 'Request More Evidence', 'Escalate Dispute Review'], correct: 'Partial Pay',
+        debrief: 'This is not ATO or lost-card fraud. The strongest path is incorrect amount evidence. Questions about PIN, Apple Pay, or stolen card would be irrelevant here.'
+      },
+      {
+        id: 'FA-PAY-3319', lane: 'PAYROLL', title: 'Payroll / Direct Deposit Change Claim', subtype: 'Spoofed employee bank-change email', priority: 'Critical', exposure: '$2,240.00',
+        summary: 'Payroll received an email requesting a direct deposit change for an existing employee. The email display name matched the employee, but the reply-to address used a look-alike domain.',
+        intake: [['Who requested change?', 'Employee display name by email'], ['Employee new/existing?', 'Existing employee'], ['Bank account used before?', 'No'], ['Trusted callback completed?', 'No answer'], ['New account type', 'Fintech checking']],
+        customer: [['Business', 'Northline Dental Group'], ['Employee', 'K. Nguyen'], ['Prior bank', 'Chase checking'], ['New bank', 'Chime / Bancorp'], ['Payroll run status', 'Pending approval']],
+        tools: ['Payroll Profile', 'Email Headers', 'Bank Verification', 'Change Request Review', 'Callback Verification', 'Payroll Run Status'],
+        evidence: [
+          ['Email Header Analysis', 'Reply-To uses northlinedentall.com with double L. SPF passed for look-alike domain, not company domain.'],
+          ['Bank Verification Report', 'New account first seen today. Owner match unable to verify. Prior payroll use: none.'],
+          ['Callback Log', 'Trusted phone callback attempted twice. No answer. Change not confirmed.']
+        ],
+        suspicious: ['Look-alike domain', 'New destination account', 'Trusted callback not completed'],
+        normal: ['Existing employee record is valid'],
+        options: ['Allow Change / Continue Payroll', 'Pause Direct Deposit Change', 'Remove Pending Payroll Destination', 'Stop Payroll Run', 'Hold Account Pending Verification', 'Escalate to Senior Investigator'], correct: 'Pause Direct Deposit Change',
+        debrief: 'The safest output is to pause the change until the trusted callback verifies the request. Do not rely on display name or email body language alone.'
+      },
+      {
+        id: 'FA-BEC-8124', lane: 'BEC', title: 'Email Fraud / BEC Claim', subtype: 'Vendor payment redirection', priority: 'Critical', exposure: '$18,770.00',
+        summary: 'A vendor emailed updated ACH instructions for an invoice. The AP clerk noticed the tone felt urgent and the new account was a fintech account instead of the vendor\'s prior business checking account.',
+        intake: [['Who requested change?', 'Vendor contact by email'], ['New or existing vendor?', 'Existing vendor'], ['Bank used before?', 'No'], ['Verified by trusted phone?', 'Callback requested but not completed'], ['Payment status', 'Not released']],
+        customer: [['Business', 'Blue Wren Events'], ['Vendor', 'Metro Print Supply'], ['Prior account', 'Wells Fargo business checking'], ['New account', 'Cash App / Sutton Bank'], ['Normal approval path', 'AP manager plus owner approval']],
+        tools: ['Email Headers', 'Domain Lookup', 'Sender Analysis', 'Beneficiary Review', 'Bank Verification', 'Payment Timeline', 'Callback Verification'],
+        evidence: [
+          ['Domain Lookup', 'metroprintsupply.co created 9 days ago. Real vendor domain is metroprintsupply.com.'],
+          ['Email Headers', 'DMARC aligned to new domain, but not the established vendor domain. Reply-To differs from From.'],
+          ['Payment Timeline', 'Invoice due in 11 days. Email requested immediate same-day payment.']
+        ],
+        suspicious: ['New domain', 'Urgent payment pressure', 'Beneficiary account not previously used'],
+        normal: ['Payment not yet released'],
+        options: ['Allow Change / Continue Payment', 'Pause Payment', 'Hold Account Pending Verification', 'Escalate to Senior Investigator', 'Refer to Cyber / ATO Review'], correct: 'Pause Payment',
+        debrief: 'BEC analysis centers on identity of the requester and destination account control. Pause payment until the vendor is verified through known contact information.'
+      },
+      {
+        id: 'FA-CR-6402', lane: 'CREDIT_RISK', title: 'Credit Risk Review', subtype: 'Limit increase with rising utilization', priority: 'Medium', exposure: '$6,500.00',
+        summary: 'Existing credit card customer requests a limit increase after several months of higher balances, two new inquiries, and reduced payroll deposits.',
+        intake: [['New or existing credit?', 'Existing card limit increase'], ['Claimed income', '$72,000 annual'], ['Income changed?', 'Customer says new overtime'], ['Recent NSF/late signs?', 'One overdraft in last 45 days'], ['Requested amount normal?', 'Larger than prior relationship supports']],
+        customer: [['Name', 'Jordan Patel'], ['Customer since', '2020'], ['Current limit', '$3,500'], ['Requested limit', '$10,000'], ['Utilization', '82%'], ['Payment history', 'Minimum payments only last 4 cycles']],
+        tools: ['Income Verification', 'DTI Calculator', 'Credit Report Summary', 'Cash Flow Review', 'Bank Statements', 'Payment History', 'Credit Utilization'],
+        evidence: [
+          ['Cash Flow Review', 'Payroll deposits down 18% over 60 days. Subscription and cash advances up.'],
+          ['Credit Report Summary', 'Two recent inquiries and one newly opened retail card. No bankruptcy.'],
+          ['Payment History', 'No late payments, but only minimum payments in recent cycles.']
+        ],
+        suspicious: ['High utilization', 'Reduced deposits', 'Recent inquiries'],
+        normal: ['Long-standing relationship', 'No current delinquency'],
+        options: ['Approve Loan', 'Deny Loan', 'Approve With Conditions', 'Request Additional Documents', 'Escalate to Credit Risk Review', 'Hold Application'], correct: 'Approve With Conditions',
+        debrief: 'Credit risk is not the same as fraud. The evidence supports caution and conditions rather than an automatic fraud denial.'
+      }
+    ];
+
+    const state = JSON.parse(localStorage.getItem('fa-mini') || '{}');
+    let activeIndex = state.activeIndex || 0;
+    let page = state.page || 'dashboard';
+    let reviewed = state.reviewed || {};
+    let picked = state.picked || {};
+    let decision = state.decision || {};
+    let notes = state.notes || {};
+
+    const pages = [
+      ['dashboard', '✦ Dashboard'], ['queue', '☰ Case Queue'], ['briefing', '☾ Case Briefing'], ['customer', '◌ Customer 360'], ['tools', '◎ Tools'], ['evidence', '▣ Evidence Vault'], ['indicators', '◇ Indicators'], ['determination', '✓ Determination'], ['debrief', '☽ Debrief'], ['learning', '☆ Learning']
+    ];
+
+    function save(){ localStorage.setItem('fa-mini', JSON.stringify({activeIndex,page,reviewed,picked,decision,notes})); }
+    function c(){ return cases[activeIndex]; }
+    function setPage(p){ page=p; save(); render(); if(innerWidth<1060) document.getElementById('sidebar').classList.add('closed'); }
+    function toggleNav(){ document.getElementById('sidebar').classList.toggle('closed'); }
+    function resetPlayground(){ localStorage.removeItem('fa-mini'); location.reload(); }
+    function generateCase(){ activeIndex = Math.floor(Math.random()*cases.length); page = 'briefing'; save(); render(); }
+    function openCase(i){ activeIndex=i; page='briefing'; save(); render(); }
+    function markTool(name){ const id=c().id; reviewed[id] = Array.from(new Set([...(reviewed[id] || []), name])); save(); render(); }
+    function toggleIndicator(type, label){ const id=c().id; picked[id] = picked[id] || {suspicious:[], normal:[]}; const arr = picked[id][type]; picked[id][type] = arr.includes(label) ? arr.filter(x=>x!==label) : [...arr, label]; save(); render(); }
+    function submitDecision(){ const id=c().id; const val = document.getElementById('decisionSelect').value; const why = document.getElementById('why').value.trim(); if(!val || !why){ alert('Choose a determination and write a quick justification first.'); return; } decision[id] = {val, why}; save(); setPage('debrief'); }
+
+    function pct(){ const id=c().id; let score=0; if(page !== 'dashboard') score+=8; if((reviewed[id]||[]).length) score+=28; if((picked[id]?.suspicious||[]).length || (picked[id]?.normal||[]).length) score+=26; if(notes[id]) score+=12; if(decision[id]) score+=26; return Math.min(score,100); }
+
+    function renderNav(){
+      document.getElementById('sideTitle').textContent = c().title;
+      document.getElementById('sideSub').textContent = c().subtype;
+      document.getElementById('nav').innerHTML = pages.map(([id,label]) => `<button class="${page===id?'active':''}" onclick="setPage('${id}')">${label}</button>`).join('');
+    }
+    function renderRail(){
+      const id=c().id; const p=pct(); document.getElementById('pct').textContent=p+'%'; document.getElementById('bar').style.width=p+'%';
+      document.getElementById('reviewedList').textContent = (reviewed[id]||[]).join(', ') || 'None yet.';
+      document.getElementById('lunaText').textContent = decision[id] ? 'Debrief unlocked. Now we can talk through what mattered and what did not.' : 'Review the evidence first. I will not reveal the answer until you make a determination.';
+    }
+    function pageTitle(label, sub){ return `<div class="section-head"><div><span class="chip pink">${c().id}</span><h2>${label}</h2><p>${sub || c().summary}</p></div><span class="chip cyan">${c().priority} · ${c().exposure}</span></div>`; }
+
+    function renderDashboard(){
+      return `<div class="hero"><div class="hero-card"><span class="chip pink">Good Evening, Ree</span><h2>Play in the mini workstation</h2><p>This is the quick playground version while the full Fraud Academy OS gets built. It follows the same flow: queue, briefing, tools, evidence, indicators, determination, then Luna debrief.</p><div class="row"><button class="btn primary" onclick="setPage('briefing')">Continue active case</button><button class="btn" onclick="generateCase()">Generate claim ✨</button></div></div><div class="luna"><div class="luna-face">ᓚᘏᗢ</div><h3>Luna desk note</h3><p>No spoilers during active investigation. I will unlock coaching after your determination.</p></div></div>
+      <div class="grid three"><div class="card"><span class="chip cyan">Cases</span><h2>${cases.length}</h2><p>Playable templates</p></div><div class="card"><span class="chip mint">Accuracy</span><h2>70%</h2><p>Starts realistic, rises with progress</p></div><div class="card"><span class="chip pink">XP</span><h2>340</h2><p>Demo progress</p></div></div>
+      <div class="card"><h3>Active Case Snapshot</h3><p><strong>${c().title}</strong> - ${c().subtype}</p><button class="btn primary" onclick="setPage('briefing')">Open briefing</button></div>`;
+    }
+    function renderQueue(){ return `${pageTitle('Case Queue','Pick a fictional case. Completed cases will later remove from active queue in the full app.')}
+      <div class="grid two">${cases.map((x,i)=>`<button class="case-card ${i===activeIndex?'active':''}" onclick="openCase(${i})"><span class="chip ${x.priority==='Critical'?'pink':'cyan'}">${x.priority}</span><strong>${x.title}</strong><div class="tiny">${x.subtype}</div><p>${x.summary}</p><div class="chip-row"><span class="chip">${x.id}</span><span class="chip">${x.exposure}</span></div></button>`).join('')}</div>`; }
+    function renderBriefing(){ return `${pageTitle('Case Briefing', c().subtype)}<div class="grid two"><div class="card"><h3>Plain-English Summary</h3><p>${c().summary}</p></div><div class="card"><h3>Key Facts</h3><div class="chip-row"><span class="chip pink">${c().lane}</span><span class="chip cyan">${c().priority}</span><span class="chip mint">Exposure ${c().exposure}</span></div><p>Suggested start: read intake, then review the tools that match this lane.</p></div></div><div class="card"><h3>Intake Form</h3><div class="table">${c().intake.map(r=>`<div class="record"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}</div></div><div class="footer-actions"><button class="btn primary full" onclick="setPage('tools')">Begin Investigation ✨</button></div>`; }
+    function renderCustomer(){ return `${pageTitle('Customer 360','Full dossier snapshot for this case.')}
+      <div class="grid two"><div class="card"><h3>Identity & Relationship</h3><div class="table">${c().customer.map(r=>`<div class="record"><b>${r[0]}</b><span>${r[1]}</span></div>`).join('')}</div></div><div class="card"><h3>Profile Change Event Log</h3><div class="table"><div class="record"><b>Recent Event</b><span>Case-specific profile or account change evidence appears in the matching tool and timeline.</span></div><div class="record"><b>Rule</b><span>Customer 360 gives context. It does not prove fraud by itself.</span></div></div></div></div>`; }
+    function renderTools(){ return `${pageTitle('Investigation Tools','Only lane-specific tools are shown here.')}
+      <div class="grid two">${c().tools.map(t=>`<button class="tool-card" onclick="markTool('${t}')"><span class="chip ${reviewed[c().id]?.includes(t)?'mint':'cyan'}">${reviewed[c().id]?.includes(t)?'Reviewed':'Open'}</span><strong>${t}</strong><p>${toolDescription(t)}</p></button>`).join('')}</div>`; }
+    function toolDescription(t){ return ({'Login History':'Authentication events, device, IP, MFA, and timing.','MFA History':'OTP, push, phone/email destination, and enrollment events.','Device Intelligence':'First seen, trusted history, browser, OS, emulator/root signals.','IP Intelligence':'Location, ASN, VPN/proxy, history, and velocity.','Financial Investigation':'Money movement, deposits, spending, and destination accounts.','Link Analysis':'Connect people, devices, IPs, merchants, banks, and cases.','Transaction Details':'Posted/auth details, channel, merchant, amount, descriptor.','Authorization Review':'Entry mode, token/wallet, AVS/CVV/3DS, auth-clearing match.','Merchant Evidence':'Receipts, response letters, delivery, refund, and policy docs.','Prior Claims':'Past claims, patterns, and outcomes.','Reason Code Guide':'Evidence category guidance for disputes.','Receipt / Invoice':'Receipt, invoice, quoted vs posted amount.','Terms / Policy Review':'Cancellation, refund, return, or merchant terms.','Payroll Profile':'Payroll history, employee/vendor status, run timing.','Email Headers':'SPF/DKIM/DMARC, routing, reply-to, sender domain.','Bank Verification':'Owner match, account status, first seen, recoverability.','Change Request Review':'Who requested the change and through what channel.','Callback Verification':'Trusted contact attempts and outcomes.','Payroll Run Status':'Whether payroll funds are pending, released, stopped, or recoverable.','Domain Lookup':'Domain age, look-alike pattern, registrar, and reputation.','Sender Analysis':'Known sender behavior vs unusual request.','Beneficiary Review':'Destination account, owner, bank type, prior use.','Payment Timeline':'Request, approval, payment, hold, and callback sequence.','Income Verification':'Paystubs, employer, deposits, and income consistency.','DTI Calculator':'Debt-to-income and affordability calculation.','Credit Report Summary':'Tradelines, inquiries, utilization, derogatory, public records.','Cash Flow Review':'Deposit/spend trends and repayment capacity.','Bank Statements':'Statement-level support for income or revenue.','Payment History':'On-time, late, minimum-only, or stress behavior.','Credit Utilization':'Balance, limit, and usage trend.'}[t] || 'Case-specific evidence view.'); }
+    function renderEvidence(){ return `${pageTitle('Evidence Vault','Documents and report-style records only. No final answer here.')}
+      <div class="grid two">${c().evidence.map(d=>`<div class="doc"><span class="chip cyan">Internal Report</span><h4>${d[0]}</h4><p>${d[1]}</p><div class="doc-preview">FRAUD ACADEMY TRAINING RECORD\nCASE: ${c().id}\nREPORT: ${d[0]}\nMASKED DATA ONLY\nSTATUS: REVIEW REQUIRED</div></div>`).join('')}</div>`; }
+    function renderIndicators(){ const id=c().id; picked[id]=picked[id]||{suspicious:[],normal:[]}; return `${pageTitle('Case Indicators Review','Pick what you believe applies. Luna still will not reveal the answer.')}
+      <div class="grid two"><div class="card"><h3>Suspicious Indicators</h3><div class="grid">${c().suspicious.map(x=>`<button class="indicator ${picked[id].suspicious.includes(x)?'selected':''}" onclick="toggleIndicator('suspicious','${x.replace(/'/g,"\\'")}')">◇ ${x}</button>`).join('')}</div></div><div class="card"><h3>Normal / Supporting Context</h3><div class="grid">${c().normal.map(x=>`<button class="indicator ${picked[id].normal.includes(x)?'selected':''}" onclick="toggleIndicator('normal','${x.replace(/'/g,"\\'")}')">♡ ${x}</button>`).join('')}</div></div></div>`; }
+    function renderDetermination(){ const d=decision[c().id] || {}; return `${pageTitle('Determination','Choose your output and justify it. Debrief unlocks after this.')}
+      <div class="card"><label class="tiny">Determination</label><select id="decisionSelect" class="search" style="width:100%;margin:8px 0 14px"> <option value="">Choose...</option>${c().options.map(o=>`<option ${d.val===o?'selected':''}>${o}</option>`).join('')}</select><label class="tiny">Justification</label><textarea id="why" placeholder="Write what evidence mattered most and what you ruled out...">${d.why || notes[c().id] || ''}</textarea><div class="row" style="margin-top:12px"><button class="btn" onclick="notes[c().id]=document.getElementById('why').value; save(); alert('Saved to case notes ✨')">Save Notes</button><button class="btn primary" onclick="submitDecision()">Submit Determination</button></div></div>`; }
+    function renderDebrief(){ const d=decision[c().id]; if(!d) return `${pageTitle('Case Debrief','Locked until you submit a determination.')}<div class="card"><p>Make a determination first. Luna is guarding the answer like a tiny moon dragon.</p><button class="btn primary" onclick="setPage('determination')">Go to Determination</button></div>`; const ok=d.val===c().correct; return `${pageTitle('Case Debrief','Senior Investigator Review')}
+      <div class="card"><span class="chip ${ok?'mint':'pink'}">${ok?'Strong call':'Review needed'}</span><h2>${ok?'Nice work ✨':'Let\'s tune the thinking'}</h2><p><strong>Your decision:</strong> ${d.val}</p><p><strong>Expected output:</strong> ${c().correct}</p><p><strong>Luna coaching:</strong> ${c().debrief}</p><p><strong>Your justification:</strong> ${d.why}</p><button class="btn primary" onclick="generateCase()">Try another case</button></div>`; }
+    function renderLearning(){ return `${pageTitle('Learning Center','Quick reminders while the full academy is being built.')}
+      <div class="grid two"><div class="card"><h3>Fraud Chargeback Subtypes</h3><p>Lost card, stolen card, never received issue, counterfeit/skimming, CNP, tokenized-wallet fraud.</p></div><div class="card"><h3>ATO Subtypes</h3><p>Credential stuffing, SIM swap, OTP phishing, vishing, remote access malware.</p></div><div class="card"><h3>Golden Rule</h3><p>Claim type controls intake questions, tools, evidence, documents, determination options, and debrief logic.</p></div><div class="card"><h3>Evidence Rule</h3><p>Do not show final fraud conclusions during active investigation. Coaching comes after decision.</p></div></div>`; }
+
+    function render(){
+      renderNav(); renderRail();
+      const map = {dashboard:renderDashboard, queue:renderQueue, briefing:renderBriefing, customer:renderCustomer, tools:renderTools, evidence:renderEvidence, indicators:renderIndicators, determination:renderDetermination, debrief:renderDebrief, learning:renderLearning};
+      document.getElementById('stage').innerHTML = (map[page]||renderDashboard)();
+    }
+    render();
+  </script>
+</body>
+</html>
