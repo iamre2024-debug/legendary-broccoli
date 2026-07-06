@@ -1,0 +1,17 @@
+{
+  "name": "Fraud Academy Workstation",
+  "short_name": "Fraud Academy",
+  "description": "Neon fraud investigation training PWA",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#170b2e",
+  "theme_color": "#9928ff",
+  "icons": [
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}
