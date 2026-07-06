@@ -1,9 +1,32 @@
 import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
+import { VitePWA } from "vite-plugin-pwa";
 
 export default defineConfig({
   base: "/legendary-broccoli/",
-  plugins: [react()],
+  plugins: [
+    react(),
+    VitePWA({
+      registerType: "autoUpdate",
+      manifest: {
+        name: "Fraud Academy Workstation",
+        short_name: "Fraud Academy",
+        description: "Neon fraud investigation training PWA",
+        start_url: ".",
+        scope: ".",
+        display: "standalone",
+        background_color: "#170b2e",
+        theme_color: "#9928ff",
+        icons: [
+          {
+            src: "icons/icon.svg",
+            sizes: "any",
+            type: "image/svg+xml"
+          }
+        ]
+      }
+    })
+  ],
   build: {
     outDir: "dist"
   }
