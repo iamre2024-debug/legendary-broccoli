@@ -10,14 +10,17 @@
   --fa-cyan: #59e8ff;
   --fa-mint: #a4ffd7;
   --fa-amber: #ffd58a;
+  --fa-bubble: rgba(255, 220, 250, 0.12);
+  --fa-charm: #ffd8fb;
+  --fa-soft-blue: #b8e8ff;
 }
 
 body {
   min-height: 100vh;
   background:
-    radial-gradient(circle at 16% 10%, rgba(255, 79, 216, 0.26), transparent 26rem),
-    radial-gradient(circle at 86% 7%, rgba(89, 232, 255, 0.18), transparent 25rem),
-    radial-gradient(circle at 50% 92%, rgba(169, 96, 255, 0.22), transparent 28rem),
+    radial-gradient(circle at 16% 10%, rgba(255, 79, 216, 0.28), transparent 26rem),
+    radial-gradient(circle at 86% 7%, rgba(89, 232, 255, 0.2), transparent 25rem),
+    radial-gradient(circle at 50% 92%, rgba(169, 96, 255, 0.24), transparent 28rem),
     linear-gradient(145deg, #070511, #120922 48%, #080511);
   color: var(--fa-ink);
 }
@@ -39,11 +42,25 @@ button, input, textarea, select { font: inherit; }
   position: fixed;
   inset: 0;
   background-image:
+    radial-gradient(circle, rgba(255,255,255,.07) 1px, transparent 1.7px),
     linear-gradient(rgba(255,255,255,.024) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255,255,255,.024) 1px, transparent 1px);
-  background-size: 34px 34px;
+  background-size: 72px 72px, 34px 34px, 34px 34px;
   pointer-events: none;
-  mask-image: linear-gradient(to bottom, rgba(0,0,0,.8), transparent 82%);
+  mask-image: linear-gradient(to bottom, rgba(0,0,0,.86), transparent 88%);
+}
+
+.faShell:after {
+  content: "✦  ♡  ✧  🦋  ⟡  ♡  ✦  ᓚᘏᗢ  ✧";
+  position: fixed;
+  right: clamp(12px, 4vw, 58px);
+  bottom: 18px;
+  z-index: 0;
+  color: rgba(255, 216, 251, .28);
+  font-size: clamp(18px, 3vw, 32px);
+  letter-spacing: .55rem;
+  filter: drop-shadow(0 0 14px rgba(255,79,216,.35));
+  pointer-events: none;
 }
 
 .faOrb {
@@ -69,7 +86,7 @@ button, input, textarea, select { font: inherit; }
 .faCaseCard,
 .faToolCard {
   border: 1px solid var(--fa-line);
-  background: var(--fa-panel);
+  background: linear-gradient(145deg, rgba(45, 25, 79, .82), rgba(23, 13, 43, .7));
   box-shadow: 0 0 34px rgba(169, 96, 255, 0.22), inset 0 0 28px rgba(255,255,255,.035);
   backdrop-filter: blur(22px);
 }
@@ -79,91 +96,137 @@ button, input, textarea, select { font: inherit; }
   top: 18px;
   z-index: 4;
   height: calc(100vh - 36px);
-  border-radius: 30px;
+  border-radius: 34px;
   padding: 18px;
   overflow: auto;
 }
 
-.faBrand { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; }
-.faBrandMark { width: 48px; height: 48px; border-radius: 17px; display: grid; place-items: center; background: linear-gradient(135deg, var(--fa-pink), var(--fa-violet)); box-shadow: 0 0 24px rgba(255,79,216,.45); font-size: 25px; }
+.faSidebar:before {
+  content: "♡ ✦ 🦋 ✧";
+  position: absolute;
+  right: 17px;
+  top: 14px;
+  color: rgba(255,216,251,.48);
+  font-size: 13px;
+  letter-spacing: .25rem;
+  pointer-events: none;
+}
+
+.faSidebar:after {
+  content: "";
+  position: absolute;
+  inset: auto 18px 18px;
+  height: 72px;
+  border-radius: 28px;
+  background:
+    radial-gradient(circle at 18% 42%, rgba(255,79,216,.2), transparent 23px),
+    radial-gradient(circle at 62% 54%, rgba(89,232,255,.16), transparent 28px),
+    radial-gradient(circle at 88% 22%, rgba(255,216,251,.2), transparent 18px);
+  pointer-events: none;
+  opacity: .66;
+}
+
+.faBrand { display: flex; gap: 12px; align-items: center; margin-bottom: 18px; position: relative; }
+.faBrandMark { width: 52px; height: 52px; border-radius: 42% 42% 54% 54% / 35% 35% 68% 68%; display: grid; place-items: center; color: transparent; background: linear-gradient(135deg, var(--fa-pink), var(--fa-violet)); box-shadow: 0 0 24px rgba(255,79,216,.45), inset 0 -8px 16px rgba(9,5,25,.28); font-size: 25px; position: relative; border: 1px solid rgba(255,255,255,.22); overflow: hidden; }
+.faBrandMark:before { content: "FA"; color: #fff7ff; font-weight: 950; letter-spacing: -.06em; font-size: 18px; text-shadow: 0 0 16px rgba(255,255,255,.7); }
+.faBrandMark:after { content: "✦"; position: absolute; right: 6px; top: 3px; color: var(--fa-cyan); font-size: 13px; filter: drop-shadow(0 0 8px rgba(89,232,255,.85)); }
 .faBrand h1 { margin: 0; font-size: 19px; letter-spacing: -.02em; }
 .faBrand p, .faMiniCase small, .faMuted { color: var(--fa-muted); }
 
-.faMiniCase { padding: 14px; border-radius: 22px; background: rgba(255,255,255,.065); border: 1px solid var(--fa-line); display: grid; gap: 8px; margin-bottom: 16px; }
+.faMiniCase { padding: 15px; border-radius: 26px; background: linear-gradient(135deg, rgba(255,255,255,.085), rgba(255,79,216,.07)); border: 1px solid var(--fa-line); display: grid; gap: 8px; margin-bottom: 16px; position: relative; overflow: hidden; }
+.faMiniCase:after { content: "♡"; position: absolute; right: 13px; bottom: 9px; color: rgba(255,216,251,.35); font-size: 24px; }
 .faMiniCase strong { line-height: 1.2; }
-.faNavList { display: grid; gap: 8px; }
-.faNavButton, .faGhostButton, .faPrimary, .faSecondary, .faTextButton, .faFilterChip, .faDecisionOption, .faCaseMini { border: 1px solid var(--fa-line); background: rgba(255,255,255,.065); color: var(--fa-ink); border-radius: 17px; padding: 11px 13px; cursor: pointer; transition: .18s ease; }
-.faNavButton { display: flex; gap: 10px; align-items: center; text-align: left; }
+.faNavList { display: grid; gap: 8px; position: relative; z-index: 1; }
+.faNavButton, .faGhostButton, .faPrimary, .faSecondary, .faTextButton, .faFilterChip, .faDecisionOption, .faCaseMini { border: 1px solid var(--fa-line); background: rgba(255,255,255,.065); color: var(--fa-ink); border-radius: 999px; padding: 11px 13px; cursor: pointer; transition: .18s ease; }
+.faNavButton { display: flex; gap: 10px; align-items: center; text-align: left; position: relative; border-radius: 21px; }
+.faNavButton:after { content: "✧"; margin-left: auto; color: rgba(255,216,251,.18); transition: .18s ease; }
 .faNavButton:hover, .faGhostButton:hover, .faPrimary:hover, .faSecondary:hover, .faFilterChip:hover, .faDecisionOption:hover, .faCaseMini:hover { transform: translateY(-1px); border-color: rgba(255,79,216,.5); box-shadow: 0 0 18px rgba(255,79,216,.18); }
-.faNavButton.active, .faPrimary, .faDecisionOption.selected, .faFilterChip.selected { background: linear-gradient(135deg, rgba(255,79,216,.28), rgba(169,96,255,.24)); border-color: rgba(255,79,216,.58); font-weight: 800; }
+.faNavButton.active, .faPrimary, .faDecisionOption.selected, .faFilterChip.selected { background: linear-gradient(135deg, rgba(255,79,216,.34), rgba(169,96,255,.26)); border-color: rgba(255,79,216,.64); font-weight: 800; box-shadow: 0 0 22px rgba(255,79,216,.2), inset 0 1px 0 rgba(255,255,255,.12); }
+.faNavButton.active:after { content: "♡"; color: #ffd8fb; filter: drop-shadow(0 0 8px rgba(255,79,216,.75)); }
 .faSecondary { background: rgba(89,232,255,.12); }
 .faTextButton { background: transparent; color: var(--fa-muted); }
 .faPrimary.full, .faSecondary.full { width: 100%; }
 .faPrimary:disabled { opacity: .45; cursor: not-allowed; }
 
 .faMain { min-width: 0; display: grid; gap: 18px; grid-template-rows: auto minmax(0, 1fr); position: relative; z-index: 1; }
-.faTopBar { border-radius: 28px; padding: 16px; display: flex; align-items: center; gap: 12px; }
-.faSearch { min-width: 220px; flex: 1; border: 1px solid var(--fa-line); border-radius: 18px; background: rgba(255,255,255,.07); padding: 11px 14px; display: flex; align-items: center; gap: 8px; }
+.faTopBar { border-radius: 32px; padding: 16px; display: flex; align-items: center; gap: 12px; position: relative; overflow: hidden; }
+.faTopBar:after { content: "✦ ♡ 🐾"; position: absolute; right: 17px; top: 7px; color: rgba(255,216,251,.28); font-size: 14px; letter-spacing: .2rem; pointer-events: none; }
+.faSearch { min-width: 220px; flex: 1; border: 1px solid var(--fa-line); border-radius: 999px; background: rgba(255,255,255,.07); padding: 11px 14px; display: flex; align-items: center; gap: 8px; box-shadow: inset 0 0 18px rgba(255,79,216,.06); }
 .faSearch input { width: 100%; background: transparent; color: var(--fa-ink); border: 0; outline: 0; }
 .faSearch input::placeholder { color: var(--fa-muted); }
 .faMobileMenu { display: none; }
-.faCasePulse { min-width: 120px; display: grid; gap: 2px; }
+.faCasePulse { min-width: 120px; display: grid; gap: 2px; border-radius: 22px; padding: 9px 12px; background: rgba(255,255,255,.055); border: 1px solid rgba(255,255,255,.08); }
 .faCasePulse span, .faEyebrow { color: #ffd6f6; text-transform: uppercase; font-size: 11px; letter-spacing: .12em; font-weight: 800; }
 
 .faContentGrid { display: grid; grid-template-columns: minmax(0, 1fr) 315px; gap: 18px; min-height: 0; }
-.faPagePanel { border-radius: 30px; padding: 20px; min-width: 0; }
+.faPagePanel { border-radius: 34px; padding: 20px; min-width: 0; position: relative; overflow: hidden; }
+.faPagePanel:before { content: ""; position: absolute; inset: 0; background: radial-gradient(circle at 11% 0%, rgba(255,79,216,.12), transparent 28%), radial-gradient(circle at 96% 14%, rgba(89,232,255,.12), transparent 26%); pointer-events: none; }
+.faPagePanel > * { position: relative; z-index: 1; }
 .faStack { display: grid; gap: 16px; }
-.faPageTitle { margin-bottom: 2px; }
+.faPageTitle { margin-bottom: 2px; position: relative; }
+.faPageTitle:after { content: "✦  ♡  ✧"; display: inline-flex; margin-top: 8px; color: rgba(255,216,251,.45); letter-spacing: .28rem; font-size: 13px; }
 .faPageTitle h2 { margin: 5px 0 0; font-size: clamp(28px, 4vw, 48px); line-height: .95; letter-spacing: -.045em; }
 .faPageTitle p, .faGlass p, .faHeroCard p, .faCaseCard p { color: var(--fa-muted); line-height: 1.55; }
 
-.faHeroCard { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(230px, .75fr); gap: 16px; padding: 24px; border-radius: 30px; border: 1px solid var(--fa-line); background: linear-gradient(135deg, rgba(255,79,216,.18), rgba(89,232,255,.08)); }
+.faHeroCard { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(230px, .75fr); gap: 16px; padding: 26px; border-radius: 36px; border: 1px solid var(--fa-line); background: linear-gradient(135deg, rgba(255,79,216,.2), rgba(89,232,255,.1)); position: relative; overflow: hidden; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 46px rgba(255,79,216,.13); }
+.faHeroCard:before { content: ""; position: absolute; right: -80px; top: -110px; width: 260px; height: 260px; border-radius: 50%; background: radial-gradient(circle, rgba(255,216,251,.22), transparent 62%); }
+.faHeroCard:after { content: "✦  🦋  ♡  ✧"; position: absolute; right: 25px; bottom: 18px; color: rgba(255,216,251,.42); letter-spacing: .32rem; font-size: 18px; pointer-events: none; }
 .faHeroCard h2 { font-size: clamp(30px, 4.4vw, 54px); line-height: .95; letter-spacing: -.05em; margin: 8px 0; }
 .faActions, .faRow, .faChipRow, .faPillWrap { display: flex; gap: 9px; flex-wrap: wrap; align-items: center; }
-.faLunaCard { border: 1px solid var(--fa-line); border-radius: 25px; background: rgba(255,255,255,.07); padding: 18px; }
-.faLunaFace { font-size: 44px; line-height: 1; margin-bottom: 10px; }
+.faLunaCard { border: 1px solid var(--fa-line); border-radius: 31px; background: linear-gradient(145deg, rgba(255,255,255,.09), rgba(255,79,216,.09)); padding: 18px; position: relative; overflow: hidden; box-shadow: inset 0 0 28px rgba(255,255,255,.035); }
+.faLunaCard:before { content: "♡ ✦ 🦋"; position: absolute; right: 15px; top: 12px; color: rgba(255,216,251,.48); letter-spacing: .18rem; }
+.faLunaCard:after { content: ""; position: absolute; width: 96px; height: 96px; border-radius: 50%; right: -25px; bottom: -38px; background: radial-gradient(circle, rgba(89,232,255,.2), transparent 70%); }
+.faLunaFace { font-size: 46px; line-height: 1; margin-bottom: 10px; filter: drop-shadow(0 0 14px rgba(255,79,216,.36)); }
 .faLunaCard h3, .faGlass h3, .faCaseCard h3 { margin: 0; }
 
 .faStatGrid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 13px; }
-.faStatCard { border-radius: 22px; padding: 16px; display: grid; gap: 6px; }
+.faStatCard { border-radius: 28px; padding: 16px; display: grid; gap: 6px; position: relative; overflow: hidden; }
+.faStatCard:after { content: "✧"; position: absolute; right: 13px; top: 10px; color: rgba(255,216,251,.32); }
 .faStatCard span, .faFact span { color: var(--fa-muted); font-size: 12px; }
 .faStatCard strong { font-size: 30px; }
 .faStatCard small { color: var(--fa-muted); }
 .faTwoColumn { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
 .faThreeColumn { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
-.faGlass { border-radius: 25px; padding: 18px; }
+.faGlass { border-radius: 31px; padding: 18px; position: relative; overflow: hidden; }
+.faGlass:before { content: ""; position: absolute; right: -32px; top: -38px; width: 110px; height: 110px; border-radius: 50%; background: radial-gradient(circle, rgba(255,216,251,.12), transparent 68%); pointer-events: none; }
 .faSectionHeader { display: flex; align-items: start; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
-.faChip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--fa-line); border-radius: 999px; padding: 6px 10px; font-size: 12px; color: var(--fa-ink); background: rgba(255,255,255,.06); }
+.faChip { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--fa-line); border-radius: 999px; padding: 6px 10px; font-size: 12px; color: var(--fa-ink); background: rgba(255,255,255,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+.faChip:before { content: "✧"; color: rgba(255,216,251,.72); }
 .faChip.pink { border-color: rgba(255,79,216,.55); color: #ffd6f6; }
 .faChip.cyan { border-color: rgba(89,232,255,.55); color: #d8fbff; }
 .faChip.mint { border-color: rgba(164,255,215,.55); color: #e6fff4; }
 
 .faBarRow { display: grid; grid-template-columns: 180px 1fr; gap: 12px; align-items: center; margin: 12px 0; }
-.faBarRow div { height: 11px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; }
-.faBarRow b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--fa-pink), var(--fa-cyan)); }
-.faCaseMini { width: 100%; text-align: left; display: grid; gap: 7px; margin-bottom: 10px; }
+.faBarRow div { height: 12px; border-radius: 999px; background: rgba(255,255,255,.08); overflow: hidden; box-shadow: inset 0 0 12px rgba(0,0,0,.22); }
+.faBarRow b { display: block; height: 100%; border-radius: inherit; background: linear-gradient(90deg, var(--fa-pink), var(--fa-cyan)); box-shadow: 0 0 16px rgba(255,79,216,.28); }
+.faCaseMini { width: 100%; text-align: left; display: grid; gap: 7px; margin-bottom: 10px; border-radius: 24px; position: relative; }
+.faCaseMini:after { content: "♡"; position: absolute; right: 12px; top: 10px; color: rgba(255,216,251,.3); }
 .faCaseMini small { color: var(--fa-muted); }
 .faToolbar { display: flex; justify-content: space-between; gap: 12px; align-items: start; }
 .faCaseGrid, .faToolGrid, .faFolderGrid, .faLessonGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-.faCaseCard { border-radius: 24px; padding: 17px; }
+.faCaseCard { border-radius: 30px; padding: 17px; position: relative; overflow: hidden; }
+.faCaseCard:after { content: "✦"; position: absolute; right: 14px; top: 12px; color: rgba(255,216,251,.33); }
 .faSubtype { color: #ffd6f6 !important; font-weight: 700; }
 .faFactStrip { display: flex; gap: 8px; flex-wrap: wrap; margin: 14px 0; }
-.faFactStrip span, .faPill { border: 1px solid var(--fa-line); border-radius: 999px; padding: 6px 9px; color: var(--fa-muted); font-size: 12px; }
+.faFactStrip span, .faPill { border: 1px solid var(--fa-line); border-radius: 999px; padding: 7px 10px; color: var(--fa-muted); font-size: 12px; background: rgba(255,255,255,.045); }
 .faBriefing { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(220px, .8fr); gap: 16px; }
 .faLargeText { font-size: 18px; }
 .faQuote { font-size: 19px; color: var(--fa-ink) !important; }
 .faBriefFacts, .faFieldGrid, .faQuestionGrid, .faProductGrid { display: grid; gap: 10px; }
 .faFieldGrid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 .faQuestionGrid, .faProductGrid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-.faQuestion, .faProduct, .faFact, .faMiniRecord { border: 1px solid var(--fa-line); background: rgba(255,255,255,.055); border-radius: 18px; padding: 12px; }
-.faQuestion span { display: inline-grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,79,216,.18); margin-bottom: 8px; }
+.faQuestion, .faProduct, .faFact, .faMiniRecord { border: 1px solid var(--fa-line); background: rgba(255,255,255,.055); border-radius: 23px; padding: 12px; position: relative; overflow: hidden; }
+.faQuestion:after, .faProduct:after, .faFact:after, .faMiniRecord:after { content: ""; position: absolute; right: -18px; bottom: -18px; width: 52px; height: 52px; border-radius: 50%; background: rgba(255,216,251,.08); }
+.faQuestion span { display: inline-grid; place-items: center; width: 28px; height: 28px; border-radius: 50%; background: rgba(255,79,216,.18); margin-bottom: 8px; box-shadow: 0 0 14px rgba(255,79,216,.16); }
 .faFact { display: grid; gap: 4px; }
 .faFact strong { overflow-wrap: anywhere; }
 .faTableLike, .faTimelinePath, .faVerifyList, .faQuoteStack { display: grid; gap: 10px; }
-.faTableRow { display: grid; grid-template-columns: 150px 1fr 1.5fr 1fr 1.5fr; gap: 10px; padding: 12px; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid var(--fa-line); }
-.faToolCard { cursor: pointer; text-align: left; border-radius: 24px; padding: 18px; color: var(--fa-ink); transition: .18s ease; }
+.faTableRow { display: grid; grid-template-columns: 150px 1fr 1.5fr 1fr 1.5fr; gap: 10px; padding: 12px; border-radius: 22px; background: rgba(255,255,255,.05); border: 1px solid var(--fa-line); }
+.faToolCard { cursor: pointer; text-align: left; border-radius: 31px; padding: 18px; color: var(--fa-ink); transition: .18s ease; position: relative; overflow: hidden; }
+.faToolCard:after { content: "♡"; position: absolute; right: 15px; top: 13px; color: rgba(255,216,251,.32); }
 .faToolCard:hover { transform: translateY(-2px); border-color: rgba(89,232,255,.55); box-shadow: 0 0 20px rgba(89,232,255,.17); }
-.faToolIcon { display: inline-grid; place-items: center; width: 42px; height: 42px; border-radius: 15px; background: linear-gradient(135deg, rgba(255,79,216,.26), rgba(89,232,255,.14)); margin-bottom: 12px; }
+.faToolCard:hover:after { content: "🦋"; color: rgba(255,216,251,.72); }
+.faToolIcon { display: inline-grid; place-items: center; width: 46px; height: 46px; border-radius: 19px; background: linear-gradient(135deg, rgba(255,79,216,.3), rgba(89,232,255,.16)); margin-bottom: 12px; box-shadow: inset 0 1px 0 rgba(255,255,255,.12), 0 0 18px rgba(255,79,216,.12); }
 .faToolCard strong { display: block; }
 .faToolCard small { color: var(--fa-muted); }
 
@@ -172,25 +235,27 @@ button, input, textarea, select { font: inherit; }
 .faToolMain, .faToolSide { min-width: 0; }
 .faTimelinePath { position: relative; padding-left: 4px; }
 .faTimelinePath:before { content: ""; position: absolute; left: 20px; top: 10px; bottom: 10px; border-left: 2px dotted rgba(255,255,255,.18); }
-.faTimelineEvent { position: relative; display: grid; grid-template-columns: 42px 1fr; gap: 12px; padding: 12px; border-radius: 18px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); }
+.faTimelineEvent { position: relative; display: grid; grid-template-columns: 42px 1fr; gap: 12px; padding: 12px; border-radius: 24px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); overflow: hidden; }
+.faTimelineEvent:after { content: "✧"; position: absolute; right: 12px; top: 10px; color: rgba(255,216,251,.24); }
 .faTimelineEvent > span { z-index: 1; display: grid; place-items: center; width: 42px; height: 42px; border-radius: 50%; background: linear-gradient(135deg, var(--fa-pink), var(--fa-violet)); font-weight: 900; box-shadow: 0 0 18px rgba(255,79,216,.3); }
 .faTimelineEvent p { margin: 4px 0 0; }
 .faTimelineEvent.good { border-color: rgba(164,255,215,.35); }
 .faTimelineEvent.caution { border-color: rgba(255,213,138,.52); }
 .faBubbleRow { display: flex; gap: 10px; flex-wrap: wrap; margin-bottom: 14px; }
-.faBubble { border-radius: 999px; padding: 8px 11px; border: 1px solid var(--fa-line); background: rgba(255,255,255,.06); }
+.faBubble { border-radius: 999px; padding: 9px 13px; border: 1px solid var(--fa-line); background: rgba(255,255,255,.06); box-shadow: inset 0 1px 0 rgba(255,255,255,.08); }
 .faBubble.good { color: var(--fa-mint); border-color: rgba(164,255,215,.42); }
 .faBubble.caution { color: var(--fa-amber); border-color: rgba(255,213,138,.42); }
-.faVerifyRow, .faNarrativeCard { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; padding: 13px; border-radius: 18px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); }
+.faVerifyRow, .faNarrativeCard { display: grid; grid-template-columns: 38px 1fr; gap: 12px; align-items: start; padding: 13px; border-radius: 24px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); }
 .faVerifyRow > span, .faNarrativeCard > span { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 50%; font-weight: 900; background: rgba(255,255,255,.08); }
 .faVerifyRow.good, .faNarrativeCard.good { border-color: rgba(164,255,215,.38); }
 .faVerifyRow.good > span, .faNarrativeCard.good > span { color: var(--fa-mint); box-shadow: 0 0 16px rgba(164,255,215,.16); }
 .faVerifyRow.caution, .faNarrativeCard.caution { border-color: rgba(255,213,138,.52); }
 .faVerifyRow.caution > span, .faNarrativeCard.caution > span { color: var(--fa-amber); box-shadow: 0 0 16px rgba(255,213,138,.14); }
-.faEvidenceExplorer button { width: 100%; text-align: left; display: grid; gap: 4px; margin-top: 8px; border: 1px solid var(--fa-line); border-radius: 14px; padding: 10px; background: rgba(255,255,255,.055); color: var(--fa-ink); }
+.faEvidenceExplorer button { width: 100%; text-align: left; display: grid; gap: 4px; margin-top: 8px; border: 1px solid var(--fa-line); border-radius: 20px; padding: 10px; background: rgba(255,255,255,.055); color: var(--fa-ink); }
 .faEvidenceExplorer small { color: var(--fa-muted); }
 .faKpiGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
-.faKpiTile { padding: 16px; border-radius: 20px; border: 1px solid var(--fa-line); background: rgba(255,255,255,.055); display: grid; gap: 8px; }
+.faKpiTile { padding: 16px; border-radius: 26px; border: 1px solid var(--fa-line); background: rgba(255,255,255,.055); display: grid; gap: 8px; position: relative; overflow: hidden; }
+.faKpiTile:after { content: "✦"; position: absolute; right: 12px; top: 9px; color: rgba(255,216,251,.28); }
 .faKpiTile span { color: var(--fa-muted); font-size: 12px; text-transform: uppercase; letter-spacing: .09em; }
 .faKpiTile strong { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; font-size: clamp(20px, 3vw, 31px); line-height: 1.1; overflow-wrap: anywhere; }
 .faKpiTile.good { border-color: rgba(164,255,215,.34); }
@@ -198,9 +263,10 @@ button, input, textarea, select { font: inherit; }
 .faMiniBars { display: grid; gap: 11px; }
 .faMiniBars div { display: grid; gap: 6px; }
 .faMiniBars span { color: var(--fa-muted); font-size: 12px; }
-.faMiniBars b { display: block; height: 10px; border-radius: 999px; background: linear-gradient(90deg, var(--fa-pink), var(--fa-cyan)); }
-.faTerminal { overflow: hidden; border-radius: 20px; background: #06040d; border: 1px solid rgba(89,232,255,.18); box-shadow: inset 0 0 25px rgba(89,232,255,.06); }
+.faMiniBars b { display: block; height: 11px; border-radius: 999px; background: linear-gradient(90deg, var(--fa-pink), var(--fa-cyan)); box-shadow: 0 0 15px rgba(255,79,216,.18); }
+.faTerminal { overflow: hidden; border-radius: 26px; background: #06040d; border: 1px solid rgba(89,232,255,.18); box-shadow: inset 0 0 25px rgba(89,232,255,.06); }
 .faTerminalTop { display: flex; gap: 8px; align-items: center; padding: 11px 13px; background: rgba(255,255,255,.06); color: var(--fa-muted); }
+.faTerminalTop:after { content: "  ✦  ♡"; margin-left: auto; color: rgba(255,216,251,.4); }
 .faTerminalTop span { width: 10px; height: 10px; border-radius: 50%; background: var(--fa-pink); }
 .faTerminalTop span:nth-child(2) { background: var(--fa-amber); }
 .faTerminalTop span:nth-child(3) { background: var(--fa-mint); }
@@ -209,18 +275,23 @@ button, input, textarea, select { font: inherit; }
 .faTerminal pre.good { color: var(--fa-mint); }
 .faNarrativeCard p { margin: 4px 0 0; color: var(--fa-muted); }
 .faToolFooter { display: flex; justify-content: space-between; gap: 14px; align-items: center; }
-.faFolderCard { border-radius: 20px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); padding: 12px; }
+.faFolderCard { border-radius: 26px; background: rgba(255,255,255,.055); border: 1px solid var(--fa-line); padding: 12px; }
 .faFolderCard summary { cursor: pointer; display: flex; justify-content: space-between; font-weight: 800; }
-.faDocRow { margin-top: 10px; border-radius: 16px; padding: 11px; display: grid; grid-template-columns: 28px 1fr; gap: 8px; background: rgba(255,255,255,.05); }
+.faFolderCard summary:before { content: "♡"; color: rgba(255,216,251,.56); margin-right: 8px; }
+.faDocRow { margin-top: 10px; border-radius: 22px; padding: 11px; display: grid; grid-template-columns: 28px 1fr; gap: 8px; background: rgba(255,255,255,.05); }
 .faDocRow small { grid-column: 2; color: var(--fa-muted); }
-.faCheckRow, .faCheckboxRow { display: flex; gap: 10px; align-items: center; padding: 11px; border-radius: 16px; background: rgba(255,255,255,.05); border: 1px solid var(--fa-line); margin-top: 8px; }
+.faCheckRow, .faCheckboxRow { display: flex; gap: 10px; align-items: center; padding: 11px; border-radius: 22px; background: rgba(255,255,255,.05); border: 1px solid var(--fa-line); margin-top: 8px; }
 .faCheckDot { display: grid; place-items: center; width: 26px; height: 26px; border-radius: 50%; background: rgba(255,255,255,.08); color: transparent; }
 .faCheckDot.done { color: var(--fa-mint); box-shadow: 0 0 14px rgba(164,255,215,.2); }
-textarea { width: 100%; min-height: 140px; border: 1px solid var(--fa-line); border-radius: 18px; background: rgba(255,255,255,.07); color: var(--fa-ink); padding: 14px; resize: vertical; outline: 0; }
+textarea { width: 100%; min-height: 140px; border: 1px solid var(--fa-line); border-radius: 26px; background: rgba(255,255,255,.07); color: var(--fa-ink); padding: 14px; resize: vertical; outline: 0; }
+textarea:focus, input:focus { box-shadow: 0 0 0 3px rgba(255,79,216,.16); }
 .faOptionGrid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
 .faLesson h3 { margin-top: 0; }
 .faRightRail { position: sticky; top: 18px; display: grid; gap: 14px; align-content: start; height: calc(100vh - 116px); overflow: auto; }
-.faRailCard { border-radius: 23px; padding: 16px; }
+.faRailCard { border-radius: 29px; padding: 16px; position: relative; overflow: hidden; }
+.faRailCard:after { content: "✦"; position: absolute; right: 14px; top: 10px; color: rgba(255,216,251,.3); }
+.faRailCard:nth-child(2n):after { content: "♡"; }
+.faRailCard:nth-child(3n):after { content: "🐾"; }
 .faRailCard h3 { margin: 4px 0; }
 .faRailCard p { color: var(--fa-muted); }
 
@@ -228,7 +299,7 @@ textarea { width: 100%; min-height: 140px; border: 1px solid var(--fa-line); bor
   .faShell { grid-template-columns: 1fr; padding: 12px; }
   .faSidebar { display: none; position: fixed; inset: 12px auto 12px 12px; width: min(330px, calc(100vw - 24px)); height: auto; }
   .faSidebarOpen { display: block; }
-  .faMobileMenu { display: inline-flex; border: 1px solid var(--fa-line); background: rgba(255,255,255,.07); color: var(--fa-ink); border-radius: 14px; padding: 10px 12px; }
+  .faMobileMenu { display: inline-flex; border: 1px solid var(--fa-line); background: rgba(255,255,255,.07); color: var(--fa-ink); border-radius: 18px; padding: 10px 12px; }
   .faContentGrid { grid-template-columns: 1fr; }
   .faRightRail { position: relative; top: auto; height: auto; }
   .faTopBar { flex-wrap: wrap; }
@@ -237,11 +308,12 @@ textarea { width: 100%; min-height: 140px; border: 1px solid var(--fa-line); bor
 
 @media (max-width: 780px) {
   .faHeroCard, .faTwoColumn, .faThreeColumn, .faBriefing, .faToolLayout, .faStatGrid, .faCaseGrid, .faToolGrid, .faFolderGrid, .faLessonGrid, .faFieldGrid, .faQuestionGrid, .faProductGrid, .faKpiGrid, .faOptionGrid { grid-template-columns: 1fr; }
-  .faTopBar { border-radius: 22px; padding: 12px; }
-  .faPagePanel { padding: 14px; border-radius: 24px; }
+  .faTopBar { border-radius: 24px; padding: 12px; }
+  .faPagePanel { padding: 14px; border-radius: 26px; }
   .faPageTitle h2 { font-size: 32px; }
   .faHeroCard { padding: 18px; }
   .faTableRow { grid-template-columns: 1fr; }
   .faToolFooter { display: grid; }
   .faBarRow { grid-template-columns: 1fr; }
+  .faShell:after { letter-spacing: .24rem; font-size: 16px; }
 }
