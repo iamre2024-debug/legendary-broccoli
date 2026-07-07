@@ -1,4 +1,5 @@
 import CreditRailMini from "./CreditRailMini.jsx";
+import DocumentRequestDock from "./DocumentRequestDock.jsx";
 import { categoryLabel, resolveToolDefinition } from "../data/toolRegistry.js";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
 
@@ -20,7 +21,7 @@ export default function RightRailPanel({
   const isCompleted = completed.includes(activeCase.id);
 
   return (
-    <aside className="faRightRail">
+    <aside className="faRightRail faNativeRightRail">
       <section className="faRailCard">
         <span className="faEyebrow">Luna rail</span>
         <h3>Current focus</h3>
@@ -28,6 +29,7 @@ export default function RightRailPanel({
         <small>{activeCase.subtype}</small>
       </section>
       <CreditRailMini activeCase={activeCase} />
+      <DocumentRequestDock activeCase={activeCase} />
       {toolDefinition && (
         <section className="faRailCard">
           <span className="faEyebrow">Evidence Explorer</span>
