@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import AppWorkstationV3 from "./AppWorkstationV3.jsx";
 import { CLAIM_FAMILIES } from "./data/fraudAcademyEngine.js";
 import { generateMatrixCase } from "./data/matrixCaseAdapter.js";
@@ -25,6 +25,15 @@ function writeMatrixCases(lane = "RANDOM", count = 1) {
   return generated;
 }
 
+function legacyGenerateCount(label = "") {
+  const normalized = String(label).replace(/\s+/g, " ").trim().toLowerCase();
+
+  if (normalized.includes("+5") || normalized.includes("generate five")) return 5;
+  if (normalized.includes("generate claim") || normalized.includes("generate one")) return 1;
+
+  return null;
+}
+
 export default function AppWorkstationMatrixBridge() {
   const [lane, setLane] = useState("RANDOM");
   const [lastBatch, setLastBatch] = useState(null);
@@ -34,14 +43,37 @@ export default function AppWorkstationMatrixBridge() {
     return Array.from(new Set([...DEFAULT_LANES, ...known]));
   }, []);
 
-  function generate(count) {
+  function generate(count, source = "matrix-dock") {
     const batch = writeMatrixCases(lane, count);
-    setLastBatch({ count, lane, scenarioId: batch[0]?.scenarioId });
+    setLastBatch({ count, lane, scenarioId: batch[0]?.scenarioId, source });
 
     if (typeof window !== "undefined") {
       window.setTimeout(() => window.location.reload(), 160);
     }
   }
+
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+
+    function routeLegacyGenerateButton(event) {
+      const button = event.target?.closest?.("button");
+      if (!button || button.closest(".faMatrixBridgeDock")) return;
+
+      const count = legacyGenerateCount(button.textContent);
+      if (!count) return;
+
+      event.preventDefault();
+      event.stopPropagation();
+      if (typeof event.stopImmediatePropagation === "function") {
+        event.stopImmediatePropagation();
+      }
+
+      generate(count, "workstation-generate-button");
+    }
+
+    document.addEventListener("click", routeLegacyGenerateButton, true);
+    return () => document.removeEventListener("click", routeLegacyGenerateButton, true);
+  }, [lane]);
 
   return (
     <>
@@ -50,7 +82,7 @@ export default function AppWorkstationMatrixBridge() {
         <div>
           <span className="faEyebrow">Matrix engine</span>
           <strong>Live case bridge ✨</strong>
-          <small>Creates lane-pure, scenario-sourced cases without answer reveal.</small>
+          <small>Creates lane-pure, scenario-sourced cases. V3 generate buttons are routed here too.</small>
         </div>
         <label>
           <span>Lane</span>
@@ -68,7 +100,7 @@ export default function AppWorkstationMatrixBridge() {
         </div>
         {lastBatch && (
           <p>
-            Added {lastBatch.count} {lastBatch.lane === "RANDOM" ? "random" : CLAIM_FAMILIES[lastBatch.lane] || lastBatch.lane} case{lastBatch.count > 1 ? "s" : ""}. Opening {lastBatch.scenarioId}.
+            Added {lastBatch.count} {lastBatch.lane === "RANDOM" ? "random" : CLAIM_FAMILIES[lastBatch.lane] || lastBatch.lane} case{lastBatch.count > 1 ? "s" : ""}. {lastBatch.source === "workstation-generate-button" ? "Routed from the workstation generate button." : `Opening ${lastBatch.scenarioId}.`}
           </p>
         )}
       </aside>
