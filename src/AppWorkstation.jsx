@@ -1,3 +1,3 @@
-import AppWorkstationV2 from "./AppWorkstationV2.jsx";
+import AppWorkstationV3 from "./AppWorkstationV3.jsx";
 
-export default AppWorkstationV2;
+export default AppWorkstationV3;
