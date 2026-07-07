@@ -172,6 +172,68 @@
   font-weight: 800;
 }
 
+.faCreditDecisionNotice {
+  display: grid;
+  gap: 0.35rem;
+  margin-bottom: 0.9rem;
+  padding: 0.9rem;
+  border: 1px solid rgba(141, 212, 255, 0.26);
+  border-radius: 20px;
+  background:
+    radial-gradient(circle at top left, rgba(61, 213, 255, 0.13), transparent 42%),
+    rgba(255, 255, 255, 0.055);
+  box-shadow: inset 0 0 22px rgba(141, 212, 255, 0.08);
+}
+
+.faCreditDecisionNotice span {
+  color: #aee9ff;
+  font-size: 0.74rem;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.faCreditDecisionNotice strong {
+  color: #fff;
+  font-size: 1rem;
+}
+
+.faCreditDecisionNotice p {
+  margin: 0;
+  color: rgba(244, 235, 255, 0.76);
+  line-height: 1.45;
+}
+
+.faCreditDecisionGrid {
+  align-items: stretch;
+}
+
+.faCreditDecisionOption {
+  display: grid !important;
+  gap: 0.28rem;
+  text-align: left;
+  min-height: 92px;
+  border-color: rgba(141, 212, 255, 0.28) !important;
+  background:
+    linear-gradient(145deg, rgba(19, 25, 57, 0.84), rgba(52, 24, 78, 0.7)) !important;
+}
+
+.faCreditDecisionOption strong {
+  color: #ffffff;
+  font-size: 0.9rem;
+}
+
+.faCreditDecisionOption small {
+  color: rgba(233, 245, 255, 0.76);
+  font-size: 0.73rem;
+  line-height: 1.32;
+}
+
+.faCreditDecisionOption.active {
+  border-color: rgba(255, 120, 220, 0.72) !important;
+  box-shadow: 0 0 0 1px rgba(255, 120, 220, 0.16), 0 0 30px rgba(255, 120, 220, 0.2) !important;
+}
+
 @media (max-width: 760px) {
   .faMatrixBridgeDock {
     right: 0.75rem;
@@ -179,5 +241,9 @@
     bottom: 0.75rem;
     width: auto;
     border-radius: 22px;
+  }
+
+  .faCreditDecisionOption {
+    min-height: auto;
   }
 }
