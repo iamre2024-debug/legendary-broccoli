@@ -1,4 +1,4 @@
-import AppWorkstationV3 from "./AppWorkstationV3.jsx";
+import AppWorkstationMatrixBridge from "./AppWorkstationMatrixBridge.jsx";
 import { validateMatrixCaseAdapter } from "./data/matrixCaseAdapter.js";
 import { validateMatrixScenarioRegistry } from "./data/matrixScenarioRegistry.js";
 
@@ -12,4 +12,4 @@ if ((!matrixScenarioStatus.readyForGeneratorAdapter || !matrixCaseAdapterStatus.
   });
 }
 
-export default AppWorkstationV3;
+export default AppWorkstationMatrixBridge;
