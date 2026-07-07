@@ -80,6 +80,23 @@
   font-size: 0.95rem;
 }
 
+.faCreditRailQuestion,
+.faCreditRailPrompt {
+  margin: 0;
+  padding: 0.55rem 0.65rem;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.055);
+  line-height: 1.35;
+}
+
+.faCreditRailQuestion strong {
+  display: block;
+  color: #ffe1fb;
+  font-size: 0.72rem;
+  margin-bottom: 0.2rem;
+}
+
 .faCreditRailPills {
   display: flex;
   flex-wrap: wrap;
@@ -111,6 +128,36 @@
   padding: 0.38rem 0.5rem;
   border-radius: 12px;
   background: rgba(255, 255, 255, 0.06);
+}
+
+.faCreditOutcomePreview {
+  display: grid;
+  gap: 0.35rem;
+}
+
+.faCreditOutcomePreview > small {
+  color: #aee9ff;
+  font-weight: 800;
+}
+
+.faCreditOutcomePreview span {
+  display: block;
+  padding: 0.5rem 0.58rem;
+  border: 1px solid rgba(141, 212, 255, 0.18);
+  border-radius: 14px;
+  background: rgba(4, 12, 30, 0.28);
+}
+
+.faCreditOutcomePreview b {
+  display: block;
+  color: #ffffff;
+  font-size: 0.76rem;
+}
+
+.faCreditOutcomePreview span small {
+  display: block;
+  margin-top: 0.18rem;
+  line-height: 1.32;
 }
 
 .faCreditRailMini details {
