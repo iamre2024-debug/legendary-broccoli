@@ -1,7 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AppWorkstationV3 from "./AppWorkstationV3.jsx";
-import CreditRailMini from "./components/CreditRailMini.jsx";
-import DocumentRequestDock from "./components/DocumentRequestDock.jsx";
 import { useCreditDeterminationBridge } from "./components/useCreditDeterminationBridge.js";
 import { CLAIM_FAMILIES } from "./data/fraudAcademyEngine.js";
 import { generateMatrixCase } from "./data/matrixCaseAdapter.js";
@@ -115,7 +113,7 @@ export default function AppWorkstationMatrixBridge() {
         <div>
           <span className="faEyebrow">Matrix engine</span>
           <strong>Live case bridge ✨</strong>
-          <small>Creates lane-pure, scenario-sourced cases. V3 generate buttons are routed here too.</small>
+          <small>Creates lane-pure, scenario-sourced cases. Native rail now handles credit and document request context.</small>
         </div>
         <label>
           <span>Lane</span>
@@ -136,8 +134,6 @@ export default function AppWorkstationMatrixBridge() {
             Added {lastBatch.count} {lastBatch.lane === "RANDOM" ? "random" : CLAIM_FAMILIES[lastBatch.lane] || lastBatch.lane} case{lastBatch.count > 1 ? "s" : ""}. {lastBatch.source === "workstation-generate-button" ? "Routed from the workstation generate button." : `Opening ${lastBatch.scenarioId}.`}
           </p>
         )}
-        <CreditRailMini activeCase={activeCaseSnapshot} />
-        <DocumentRequestDock activeCase={activeCaseSnapshot} />
       </aside>
     </>
   );
