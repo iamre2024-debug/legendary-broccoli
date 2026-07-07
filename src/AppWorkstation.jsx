@@ -1,4 +1,4 @@
-import AppWorkstationMatrixBridge from "./AppWorkstationMatrixBridge.jsx";
+import AppWorkstationNativeBridge from "./AppWorkstationNativeBridge.jsx";
 import { validateMatrixCaseAdapter } from "./data/matrixCaseAdapter.js";
 import { validateMatrixScenarioRegistry } from "./data/matrixScenarioRegistry.js";
 import { validateFraudAcademyGuardrails } from "./data/fraudAcademyGuardrails.js";
@@ -18,4 +18,4 @@ if (!fraudAcademyGuardrailStatus.ok && typeof console !== "undefined") {
   console.warn("Fraud Academy source and lane guardrails need attention:", fraudAcademyGuardrailStatus);
 }
 
-export default AppWorkstationMatrixBridge;
+export default AppWorkstationNativeBridge;
