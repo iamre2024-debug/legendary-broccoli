@@ -48,7 +48,7 @@ export function useCreditDeterminationBridge(activeCaseSnapshot, refreshActiveCa
         const guide = rail.outcomeGuide.find((item) => item.label === outcome);
         button.hidden = false;
         button.dataset.creditOutcome = outcome;
-        button.classList.toggle("active", selected === outcome);
+        button.classList.toggle("selected", selected === outcome);
         button.classList.add("faCreditDecisionOption");
         button.innerHTML = `<strong>${outcome}</strong><small>${guide?.useWhen || "Use only if the credit evidence and reason narrative support it."}</small>`;
         button.setAttribute("aria-label", `${outcome}. Credit-safe determination option.`);
@@ -75,7 +75,7 @@ export function useCreditDeterminationBridge(activeCaseSnapshot, refreshActiveCa
       const outcome = button.dataset.creditOutcome;
       saveCreditDetermination(rail.caseId, outcome);
       refreshActiveCaseSnapshot?.();
-      button.closest(".faOptionGrid")?.querySelectorAll("button[data-credit-outcome]").forEach((item) => item.classList.toggle("active", item === button));
+      button.closest(".faOptionGrid")?.querySelectorAll("button[data-credit-outcome]").forEach((item) => item.classList.toggle("selected", item === button));
       window.setTimeout(() => window.location.reload(), 80);
     }
 
