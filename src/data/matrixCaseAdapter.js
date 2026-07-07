@@ -1,4 +1,5 @@
 import { CLAIM_FAMILIES, generateCase as generateLegacyCase, toolNavByLane } from "./fraudAcademyEngine";
+import { buildCustomerProfileSpine, profileRowsForTool } from "./customerProfileSpine";
 import { buildScenarioProvenance, getScenarioForLane, MATRIX_SCENARIO_VERSION } from "./matrixScenarioRegistry";
 import { resolveToolDefinition } from "./toolRegistry";
 
@@ -7,6 +8,7 @@ const TRAINING_GUARDRAIL = "Final determination and senior reasoning stay hidden
 export function generateMatrixCase(lane = "RANDOM", seed = Date.now()) {
   const scenario = getScenarioForLane(lane, seed);
   const baseCase = generateLegacyCase(scenario.lane);
+  const customerProfile = buildCustomerProfileSpine(scenario, baseCase);
   const toolkitTools = uniqueList(scenario.toolkitTools || []);
   const suggestedTools = toolkitTools.map((toolId) => toolLabelFor(scenario.lane, toolId));
   const provenance = buildScenarioProvenance(scenario);
@@ -18,12 +20,13 @@ export function generateMatrixCase(lane = "RANDOM", seed = Date.now()) {
     subtype: scenario.subtype,
     summary: buildMatrixSummary(scenario, baseCase.exposure),
     statement: buildMatrixStatement(scenario, baseCase.statement),
+    profile: customerProfile,
     intakeQuestions: scenario.intakeQuestions?.length ? scenario.intakeQuestions : baseCase.intakeQuestions,
     intakeAnswers: buildNeutralIntakeAnswers(scenario, baseCase),
     suggestedTools,
-    documents: mergeDocumentBuckets(baseCase.documents, scenario.documents),
-    timeline: buildNeutralTimeline(scenario, baseCase),
-    tools: enrichScenarioTools(baseCase.tools, scenario, baseCase, toolkitTools),
+    documents: mergeDocumentBuckets(baseCase.documents, scenario.documents, customerProfile),
+    timeline: buildNeutralTimeline(scenario, baseCase, customerProfile),
+    tools: enrichScenarioTools(baseCase.tools, scenario, baseCase, toolkitTools, customerProfile),
     expectedEvidenceCategories: scenario.expectedEvidence || [],
     taxonomyTags: scenario.taxonomyTags || {},
     scenarioId: scenario.scenarioId,
@@ -55,18 +58,21 @@ export function validateMatrixCaseAdapter(lane = "ATO") {
 
   if (!sample.expectedEvidenceCategories?.length) missing.push("expectedEvidenceCategories:empty");
   if (!sample.suggestedTools?.length) missing.push("suggestedTools:empty");
+  if (!sample.profile?.lookupKeys?.trainingFullSsnOrEin) missing.push("profile.lookupKeys:missing");
+  if (!sample.profile?.loginSessions?.length) missing.push("profile.loginSessions:empty");
 
   return {
     version: MATRIX_SCENARIO_VERSION,
     readyForGeneratorAdapter: missing.length === 0,
     sampleCaseId: sample.id,
     sampleScenarioId: sample.scenarioId,
+    sampleCustomerId: sample.profile?.customerId,
     lane: sample.lane,
     missing
   };
 }
 
-function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools) {
+function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, customerProfile) {
   const enrichedTools = { ...baseTools };
 
   toolkitTools.forEach((toolId) => {
@@ -75,6 +81,7 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools) {
     const baseRows = Array.isArray(currentTool.rows) ? currentTool.rows : [];
     const baseTimeline = Array.isArray(currentTool.timeline) ? currentTool.timeline : [];
     const scenarioDocs = flattenDocuments(scenario.documents);
+    const profileRows = profileRowsForTool(toolId, customerProfile);
 
     enrichedTools[toolId] = {
       ...currentTool,
@@ -82,19 +89,21 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools) {
       summary: `${currentTool.summary || definition.evidenceRole} Matrix context: ${scenario.plainEnglishMeaning}`,
       rows: [
         ...baseRows,
+        ...profileRows,
         row("Scenario source", `${scenario.scenarioId} · ${scenario.difficulty}`, "neutral"),
         row("Evidence category", (scenario.expectedEvidence || []).join(", ") || "Needs review", "neutral"),
         row("Claim lane fit", scenario.claimFamily, "good"),
         row("Training guardrail", "Evidence only, no final verdict", "good")
       ],
-      timeline: baseTimeline.length ? baseTimeline : buildNeutralTimeline(scenario, baseCase),
+      timeline: enrichToolTimeline(baseTimeline, scenario, baseCase, customerProfile, toolId),
       riskSignals: uniqueList([
         ...(currentTool.riskSignals || []),
         `Needs review: ${definition.title} evidence should be compared against the ${scenario.claimFamily} story.`,
+        `Customer 360 comparison: ${customerProfile.customerId} baseline, profile changes, login sessions, and lookup keys should be used as context only.`,
         `Evidence gap check: ${firstOrFallback(scenario.expectedEvidence, "lane-specific evidence")} must be documented before determination.`,
         `Sequence check: ${(scenario.timelinePattern || []).slice(0, 3).join(" → ") || "timeline not provided"}.`
       ]),
-      relatedDocuments: uniqueList([...(currentTool.relatedDocuments || []), ...scenarioDocs, `${definition.title} Report`, "Case timeline", "Investigation summary"]),
+      relatedDocuments: uniqueList([...(currentTool.relatedDocuments || []), ...scenarioDocs, ...profileDocumentNames(customerProfile), `${definition.title} Report`, "Case timeline", "Investigation summary"]),
       nextActions: uniqueList([
         ...(currentTool.nextActions || []),
         `Search ${definition.title} for repeated values, first-seen records, timing gaps, or ownership mismatches.`,
@@ -106,6 +115,10 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools) {
         {
           title: "Matrix scenario context",
           items: [scenario.plainEnglishMeaning, scenario.howItHappens, `Scenario ID: ${scenario.scenarioId}`]
+        },
+        {
+          title: "Customer 360 lookup spine",
+          items: reportSeedItems(customerProfile)
         },
         {
           title: "Evidence to compare",
@@ -153,28 +166,72 @@ function neutralAnswerFor(question, scenario, index) {
   return index === 0 ? scenario.plainEnglishMeaning : "Needs review in the appropriate tool";
 }
 
-function buildNeutralTimeline(scenario, baseCase) {
+function buildNeutralTimeline(scenario, baseCase, customerProfile) {
   const pattern = scenario.timelinePattern || [];
   if (!pattern.length) return baseCase.timeline || [];
 
-  return pattern.map((event, index) => [
-    index === 0 ? baseCase.issueStart : `Step ${index + 1}`,
-    `${event} recorded for ${scenario.claimFamily}. Evidence only, no final conclusion.`
+  const profileEvents = (customerProfile.profileChanges || []).slice(0, 1).map((event) => [
+    event.time || "Profile event",
+    `${event.event} recorded in Customer 360 for ${scenario.claimFamily}. Evidence only, no final conclusion.`
   ]);
+
+  return [
+    ...pattern.map((event, index) => [
+      index === 0 ? baseCase.issueStart : `Step ${index + 1}`,
+      `${event} recorded for ${scenario.claimFamily}. Evidence only, no final conclusion.`
+    ]),
+    ...profileEvents
+  ];
 }
 
-function mergeDocumentBuckets(baseDocuments = {}, scenarioDocuments = {}) {
+function enrichToolTimeline(baseTimeline, scenario, baseCase, customerProfile, toolId) {
+  const generated = buildNeutralTimeline(scenario, baseCase, customerProfile);
+  const sessionEvents = toolId === "login"
+    ? (customerProfile.loginSessions || []).map((session) => [session.time, `${session.eventText}. Evidence only, compare to baseline.`])
+    : [];
+  return uniqueTimeline(baseTimeline.length ? [...baseTimeline, ...sessionEvents] : [...sessionEvents, ...generated]);
+}
+
+function mergeDocumentBuckets(baseDocuments = {}, scenarioDocuments = {}, customerProfile = {}) {
   const merged = { ...baseDocuments };
 
   Object.entries(scenarioDocuments || {}).forEach(([bucket, docs]) => {
     merged[bucket] = uniqueList([...(merged[bucket] || []), ...(docs || [])]);
   });
 
+  merged["Customer 360 / Lookup Records"] = uniqueList([
+    ...(merged["Customer 360 / Lookup Records"] || []),
+    "Customer 360 dossier",
+    "Fictional SSN/EIN + DOB lookup trail",
+    "Login/IP/device baseline comparison",
+    ...(customerProfile.backgroundReportOutline || [])
+  ]);
+
   return merged;
 }
 
 function flattenDocuments(documents = {}) {
   return uniqueList(Object.values(documents || {}).flat().filter(Boolean));
+}
+
+function profileDocumentNames(customerProfile = {}) {
+  return uniqueList(["Customer 360 dossier", "Profile change event log", "Login/IP/device lookup trail", ...(customerProfile.backgroundReportOutline || [])]);
+}
+
+function reportSeedItems(customerProfile = {}) {
+  const seeds = customerProfile.reportSeeds || [];
+  if (!seeds.length) return ["Customer profile lookup seeds pending."];
+  return seeds.map((seed) => `${seed.label}: ${seed.value}. ${seed.use}`);
+}
+
+function uniqueTimeline(events = []) {
+  const seen = new Set();
+  return events.filter((event) => {
+    const key = Array.isArray(event) ? event.join("|") : String(event);
+    if (seen.has(key)) return false;
+    seen.add(key);
+    return true;
+  });
 }
 
 function toolLabelFor(lane, toolId) {
