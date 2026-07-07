@@ -1,0 +1,39 @@
+body.faNativeRailReady .faContentGrid > .faRightRail:not(.faNativeRightRail) {
+  display: none;
+}
+
+body.faNativeDeterminationReady .faPagePanel > .faStack {
+  display: none;
+}
+
+.faNativeDeterminationSlot {
+  min-width: 0;
+  width: 100%;
+}
+
+.faNativeDeterminationSlot .faStack {
+  display: flex;
+}
+
+.faNativeRightRail .faDocumentRequestDock {
+  position: static;
+  width: auto;
+  margin: 0;
+  box-shadow: 0 16px 50px rgba(247, 87, 255, 0.14);
+}
+
+.faNativeRightRail .faDocumentRequestRows {
+  max-height: 280px;
+  overflow: auto;
+  padding-right: 2px;
+}
+
+.faNativeRightRail .faDocumentRequestRow {
+  grid-template-columns: 1fr;
+  gap: 8px;
+}
+
+.faNativeRightRail .faDocumentRequestRow span,
+.faNativeRightRail .faDocumentRequestRow em {
+  justify-self: start;
+}
