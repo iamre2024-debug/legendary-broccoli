@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import AppWorkstationV3 from "./AppWorkstationV3.jsx";
 import CreditRailMini from "./components/CreditRailMini.jsx";
+import DocumentRequestDock from "./components/DocumentRequestDock.jsx";
 import { useCreditDeterminationBridge } from "./components/useCreditDeterminationBridge.js";
 import { CLAIM_FAMILIES } from "./data/fraudAcademyEngine.js";
 import { generateMatrixCase } from "./data/matrixCaseAdapter.js";
@@ -136,6 +137,7 @@ export default function AppWorkstationMatrixBridge() {
           </p>
         )}
         <CreditRailMini activeCase={activeCaseSnapshot} />
+        <DocumentRequestDock activeCase={activeCaseSnapshot} />
       </aside>
     </>
   );
