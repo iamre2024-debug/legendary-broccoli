@@ -1,0 +1,199 @@
+import { useEffect, useMemo, useState } from "react";
+import { createPortal } from "react-dom";
+import DeterminationPanel from "./DeterminationPanel.jsx";
+import RightRailPanel from "./RightRailPanel.jsx";
+import { toolNavByLane } from "../data/fraudAcademyEngine.js";
+import { loadState, saveState } from "../utils/storage.js";
+
+const STORE = "fa-v3-interactive-investigator";
+const key = (name) => `${STORE}:${name}`;
+const EMPTY_INDICATORS = { suspicious: [], normal: [] };
+
+export default function NativePanelRuntime() {
+  const [snapshot, setSnapshot] = useState(() => readSnapshot());
+  const [targets, setTargets] = useState(() => findTargets());
+
+  const caseState = useMemo(() => buildCaseState(snapshot), [snapshot]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return undefined;
+
+    const refresh = () => {
+      setSnapshot(readSnapshot());
+      setTargets(findTargets());
+    };
+
+    refresh();
+    const interval = window.setInterval(refresh, 600);
+    window.addEventListener("click", refresh, true);
+    window.addEventListener("storage", refresh);
+
+    return () => {
+      window.clearInterval(interval);
+      window.removeEventListener("click", refresh, true);
+      window.removeEventListener("storage", refresh);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+
+    const showRail = Boolean(targets.grid && snapshot.activeCase);
+    const showDetermination = Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase);
+
+    document.body.classList.toggle("faNativeRailReady", showRail);
+    document.body.classList.toggle("faNativeDeterminationReady", showDetermination);
+
+    return () => {
+      document.body.classList.remove("faNativeRailReady");
+      document.body.classList.remove("faNativeDeterminationReady");
+    };
+  }, [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
+
+  if (!snapshot.activeCase) return null;
+
+  const rail = targets.grid
+    ? createPortal(
+        <RightRailPanel
+          activeCase={snapshot.activeCase}
+          completed={snapshot.completed}
+          reviewedTools={caseState.reviewedTools}
+          indicators={caseState.indicators}
+          caseCount={snapshot.cases.length}
+          actions={caseState.actions}
+          page={snapshot.page}
+          progress={caseState.progress}
+        />,
+        targets.grid
+      )
+    : null;
+
+  const determination = targets.pagePanel && snapshot.page === "determination"
+    ? createPortal(
+        <div className="faNativeDeterminationSlot" aria-label="Native determination panel">
+          <DeterminationPanel
+            activeCase={snapshot.activeCase}
+            determination={caseState.determination}
+            justification={caseState.justification}
+            setDetermination={(value) => writeCaseMap("determinations", snapshot.activeCase.id, value, setSnapshot)}
+            setJustification={(value) => writeCaseMap("justifications", snapshot.activeCase.id, value, setSnapshot)}
+            completeCase={() => completeCase(snapshot, caseState.determination, setSnapshot)}
+          />
+        </div>,
+        targets.pagePanel
+      )
+    : null;
+
+  return (
+    <>
+      {rail}
+      {determination}
+    </>
+  );
+}
+
+function readSnapshot() {
+  const cases = loadState(key("cases"), []);
+  const completed = loadState(key("completed"), []);
+  const activeCaseId = loadState(key("activeCaseId"), cases[0]?.id);
+  const activeCase = cases.find((item) => item.id === activeCaseId) || cases.find((item) => !completed.includes(item.id)) || cases[0] || null;
+
+  return {
+    cases,
+    completed,
+    activeCase,
+    page: loadState(key("page"), "dashboard"),
+    reviewedTools: loadState(key("reviewedTools"), {}),
+    indicators: loadState(key("indicatorChecks"), {}),
+    determinations: loadState(key("determinations"), {}),
+    justifications: loadState(key("justifications"), {}),
+    actionLog: loadState(key("actionLog"), {})
+  };
+}
+
+function buildCaseState(snapshot) {
+  const activeCase = snapshot.activeCase;
+  if (!activeCase) {
+    return {
+      reviewedTools: [],
+      indicators: EMPTY_INDICATORS,
+      actions: [],
+      determination: "",
+      justification: "",
+      progress: 0
+    };
+  }
+
+  const reviewedTools = snapshot.reviewedTools[activeCase.id] || [];
+  const indicators = snapshot.indicators[activeCase.id] || EMPTY_INDICATORS;
+  const determination = snapshot.determinations[activeCase.id] || "";
+
+  return {
+    reviewedTools,
+    indicators,
+    actions: snapshot.actionLog[activeCase.id] || [],
+    determination,
+    justification: snapshot.justifications[activeCase.id] || "",
+    progress: progressFor(activeCase, reviewedTools, indicators, determination)
+  };
+}
+
+function writeCaseMap(name, caseId, value, setSnapshot) {
+  const current = loadState(key(name), {});
+  saveState(key(name), { ...current, [caseId]: value });
+  notifyLocalRuntime();
+  setSnapshot(readSnapshot());
+}
+
+function completeCase(snapshot, determination, setSnapshot) {
+  const activeCase = snapshot.activeCase;
+  if (!activeCase) return;
+
+  const completed = Array.from(new Set([...(snapshot.completed || []), activeCase.id]));
+  const currentLog = loadState(key("actionLog"), {});
+  const action = {
+    actionId: `${activeCase.id}-${Date.now()}-SubmitDecision-native`,
+    performedAt: new Date().toISOString(),
+    actionType: "SubmitDecision",
+    outcome: "Determination submitted through native panel and Luna debrief unlocked",
+    xpDelta: 15,
+    confidenceDelta: 0,
+    notes: "Native determination panel submitted",
+    metadata: { determination }
+  };
+
+  saveState(key("completed"), completed);
+  saveState(key("actionLog"), {
+    ...currentLog,
+    [activeCase.id]: [action, ...(currentLog[activeCase.id] || [])].slice(0, 24)
+  });
+  saveState(key("page"), "debrief");
+  notifyLocalRuntime();
+  setSnapshot(readSnapshot());
+
+  if (typeof window !== "undefined") {
+    window.setTimeout(() => window.location.reload(), 120);
+  }
+}
+
+function findTargets() {
+  if (typeof document === "undefined") return { grid: null, pagePanel: null };
+
+  return {
+    grid: document.querySelector(".faContentGrid"),
+    pagePanel: document.querySelector(".faPagePanel")
+  };
+}
+
+function notifyLocalRuntime() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("storage"));
+}
+
+function progressFor(activeCase, reviewed = [], checks = {}, determination = "") {
+  const tools = toolNavByLane[activeCase.lane] || [];
+  const toolScore = tools.length ? Math.round((reviewed.length / tools.length) * 45) : 0;
+  const indicatorScore = ((checks.suspicious || []).length + (checks.normal || []).length) > 0 ? 25 : 0;
+  const determinationScore = determination ? 30 : 0;
+  return Math.min(100, toolScore + indicatorScore + determinationScore);
+}
