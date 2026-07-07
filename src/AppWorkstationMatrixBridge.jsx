@@ -1,7 +1,8 @@
-import { useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import AppWorkstationV3 from "./AppWorkstationV3.jsx";
+import CreditRailMini from "./components/CreditRailMini.jsx";
+import { useCreditDeterminationBridge } from "./components/useCreditDeterminationBridge.js";
 import { CLAIM_FAMILIES } from "./data/fraudAcademyEngine.js";
-import { buildCreditDecisionRail } from "./data/creditDecisionRail.js";
 import { generateMatrixCase } from "./data/matrixCaseAdapter.js";
 import { loadState, saveState } from "./utils/storage.js";
 import "./matrixBridge.css";
@@ -41,19 +42,6 @@ function legacyGenerateCount(label = "") {
   return null;
 }
 
-function readDeterminations() {
-  return loadState(key("determinations"), {});
-}
-
-function saveCreditDetermination(caseId, outcome) {
-  if (!caseId || !outcome) return;
-  saveState(key("determinations"), { ...readDeterminations(), [caseId]: outcome });
-}
-
-function currentPageIsDetermination() {
-  return loadState(key("page"), "dashboard") === "determination";
-}
-
 export default function AppWorkstationMatrixBridge() {
   const [lane, setLane] = useState("RANDOM");
   const [lastBatch, setLastBatch] = useState(null);
@@ -63,6 +51,12 @@ export default function AppWorkstationMatrixBridge() {
     const known = Object.keys(CLAIM_FAMILIES);
     return Array.from(new Set([...DEFAULT_LANES, ...known]));
   }, []);
+
+  const refreshActiveCaseSnapshot = useCallback(() => {
+    setActiveCaseSnapshot(readActiveCaseSnapshot());
+  }, []);
+
+  useCreditDeterminationBridge(activeCaseSnapshot, refreshActiveCaseSnapshot);
 
   function generate(count, source = "matrix-dock") {
     const batch = writeMatrixCases(lane, count);
@@ -75,24 +69,20 @@ export default function AppWorkstationMatrixBridge() {
   }
 
   useEffect(() => {
-    function refreshSnapshot() {
-      setActiveCaseSnapshot(readActiveCaseSnapshot());
-    }
-
-    refreshSnapshot();
+    refreshActiveCaseSnapshot();
 
     if (typeof window === "undefined") return undefined;
 
-    const interval = window.setInterval(refreshSnapshot, 1200);
-    window.addEventListener("click", refreshSnapshot, true);
-    window.addEventListener("storage", refreshSnapshot);
+    const interval = window.setInterval(refreshActiveCaseSnapshot, 1200);
+    window.addEventListener("click", refreshActiveCaseSnapshot, true);
+    window.addEventListener("storage", refreshActiveCaseSnapshot);
 
     return () => {
       window.clearInterval(interval);
-      window.removeEventListener("click", refreshSnapshot, true);
-      window.removeEventListener("storage", refreshSnapshot);
+      window.removeEventListener("click", refreshActiveCaseSnapshot, true);
+      window.removeEventListener("storage", refreshActiveCaseSnapshot);
     };
-  }, []);
+  }, [refreshActiveCaseSnapshot]);
 
   useEffect(() => {
     if (typeof document === "undefined") return undefined;
@@ -116,76 +106,6 @@ export default function AppWorkstationMatrixBridge() {
     document.addEventListener("click", routeLegacyGenerateButton, true);
     return () => document.removeEventListener("click", routeLegacyGenerateButton, true);
   }, [lane]);
-
-  useEffect(() => {
-    if (typeof document === "undefined" || typeof window === "undefined") return undefined;
-
-    const rail = buildCreditDecisionRail(activeCaseSnapshot);
-    if (!rail) return undefined;
-
-    function syncCreditDeterminationPanel() {
-      if (!currentPageIsDetermination()) return;
-
-      const optionGrid = document.querySelector(".faOptionGrid");
-      if (!optionGrid) return;
-
-      optionGrid.classList.add("faCreditDecisionGrid");
-      optionGrid.setAttribute("aria-label", `${rail.title} outcome choices`);
-
-      const selected = readDeterminations()[rail.caseId];
-      const buttons = Array.from(optionGrid.querySelectorAll("button"));
-
-      buttons.forEach((button, index) => {
-        const outcome = rail.outcomes[index];
-        if (!outcome) {
-          button.hidden = true;
-          button.setAttribute("aria-hidden", "true");
-          return;
-        }
-
-        const guide = rail.outcomeGuide.find((item) => item.label === outcome);
-        button.hidden = false;
-        button.dataset.creditOutcome = outcome;
-        button.classList.toggle("active", selected === outcome);
-        button.classList.add("faCreditDecisionOption");
-        button.innerHTML = `<strong>${outcome}</strong><small>${guide?.useWhen || "Use only if the credit evidence and reason narrative support it."}</small>`;
-        button.setAttribute("aria-label", `${outcome}. Credit-safe determination option.`);
-      });
-
-      if (!document.querySelector(".faCreditDecisionNotice")) {
-        const notice = document.createElement("aside");
-        notice.className = "faCreditDecisionNotice";
-        notice.innerHTML = `<span>Credit decision rail</span><strong>${rail.decisionQuestion}</strong><p>${rail.reasonNarrativePrompt}</p>`;
-        optionGrid.parentElement?.insertBefore(notice, optionGrid);
-      }
-    }
-
-    function handleCreditDeterminationClick(event) {
-      const button = event.target?.closest?.("button[data-credit-outcome]");
-      if (!button) return;
-
-      event.preventDefault();
-      event.stopPropagation();
-      if (typeof event.stopImmediatePropagation === "function") {
-        event.stopImmediatePropagation();
-      }
-
-      const outcome = button.dataset.creditOutcome;
-      saveCreditDetermination(rail.caseId, outcome);
-      setActiveCaseSnapshot(readActiveCaseSnapshot());
-      button.closest(".faOptionGrid")?.querySelectorAll("button[data-credit-outcome]").forEach((item) => item.classList.toggle("active", item === button));
-      window.setTimeout(() => window.location.reload(), 80);
-    }
-
-    syncCreditDeterminationPanel();
-    const interval = window.setInterval(syncCreditDeterminationPanel, 500);
-    document.addEventListener("click", handleCreditDeterminationClick, true);
-
-    return () => {
-      window.clearInterval(interval);
-      document.removeEventListener("click", handleCreditDeterminationClick, true);
-    };
-  }, [activeCaseSnapshot]);
 
   return (
     <>
@@ -218,48 +138,5 @@ export default function AppWorkstationMatrixBridge() {
         <CreditRailMini activeCase={activeCaseSnapshot} />
       </aside>
     </>
-  );
-}
-
-function CreditRailMini({ activeCase }) {
-  const rail = buildCreditDecisionRail(activeCase);
-  if (!rail) return null;
-
-  const previewOutcomes = (rail.outcomeGuide?.length ? rail.outcomeGuide : rail.outcomes.map((label) => ({ label, useWhen: "Use only if the evidence and reason-code narrative support it." }))).slice(0, 4);
-
-  return (
-    <section className="faCreditRailMini" aria-label="Credit decision rail">
-      <div className="faCreditRailHeader">
-        <span className="faEyebrow">Credit rail</span>
-        <strong>{rail.title}</strong>
-        <small>{rail.caseFamily} · {rail.subtype}</small>
-      </div>
-      <p className="faCreditRailQuestion"><strong>Decision question</strong>{rail.decisionQuestion}</p>
-      <div className="faCreditRailPills">
-        <span>{rail.applicationStatus}</span>
-        <span>{rail.evidenceProgress}% evidence mapped</span>
-        <span>{rail.evidenceStatusLabel}</span>
-      </div>
-      <p>{rail.sla}</p>
-      <div className="faCreditRailList">
-        <small>Missing / needs review</small>
-        {rail.missingDocs.slice(0, 3).map((item) => <em key={item}>{item}</em>)}
-      </div>
-      <div className="faCreditOutcomePreview" aria-label="Credit-safe outcome preview">
-        <small>Credit-safe outcomes, not pay / deny claim labels</small>
-        {previewOutcomes.map((item) => (
-          <span key={item.label}>
-            <b>{item.label}</b>
-            <small>{item.useWhen}</small>
-          </span>
-        ))}
-      </div>
-      <p className="faCreditRailPrompt">{rail.reasonNarrativePrompt}</p>
-      <details>
-        <summary>Reason-code guardrails</summary>
-        {rail.reasonCodeDrafts.map((item) => <p key={item}>{item}</p>)}
-        {rail.guardrails.map((item) => <p key={item}>{item}</p>)}
-      </details>
-    </section>
   );
 }
