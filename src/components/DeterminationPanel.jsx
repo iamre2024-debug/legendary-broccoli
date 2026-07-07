@@ -34,7 +34,7 @@ export default function DeterminationPanel({
             return (
               <button
                 key={option}
-                className={classNames("faDecisionOption", creditRail && "faCreditDecisionOption", determination === option && "active")}
+                className={classNames("faDecisionOption", creditRail && "faCreditDecisionOption", determination === option && "selected")}
                 onClick={() => setDetermination(option)}
                 aria-label={creditRail ? `${option}. Credit-safe determination option.` : option}
               >
