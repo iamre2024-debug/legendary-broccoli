@@ -4,12 +4,14 @@ import NativePanelRuntime from "./components/NativePanelRuntime.jsx";
 import Customer360DirectoryRuntime from "./components/Customer360DirectoryRuntime.jsx";
 import ToolReportSaveRuntime from "./components/ToolReportSaveRuntime.jsx";
 import SavedReportCenterRuntime from "./components/SavedReportCenterRuntime.jsx";
+import TimelineActionImpactRuntime from "./components/TimelineActionImpactRuntime.jsx";
 import "./nativePanelRuntime.css";
 import "./lookupReportLauncher.css";
 import "./reportCenter.css";
 import "./customer360Directory.css";
 import "./mobileNativePolish.css";
 import "./toolReportSaveDock.css";
+import "./timelineActionImpactRuntime.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
@@ -20,6 +22,7 @@ export default function AppWorkstationNativeBridge() {
       <Customer360DirectoryRuntime />
       <ToolReportSaveRuntime />
       <SavedReportCenterRuntime />
+      <TimelineActionImpactRuntime />
     </>
   );
 }
