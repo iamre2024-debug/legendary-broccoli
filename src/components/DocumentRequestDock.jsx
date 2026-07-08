@@ -5,18 +5,16 @@ import { appendAction } from "../data/workstationRuntimeState.js";
 
 export default function DocumentRequestDock({ activeCase }) {
   const [loggedRequests, setLoggedRequests] = useState({});
-  const [requestNotes, setRequestNotes] = useState({});
   if (!activeCase) return null;
 
   const rail = buildCreditDecisionRail(activeCase);
-  const requestRows = buildDocumentRequestWorkflow(activeCase, rail).slice(0, 6);
+  const requestRows = buildDocumentRequestWorkflow(activeCase, rail).slice(0, 4);
   const creditMode = Boolean(rail);
 
   if (!requestRows.length) return null;
 
   function logRequest(row) {
     if (!activeCase?.id || !row?.id) return;
-    const investigatorNote = (requestNotes[row.id] || "").trim();
     appendAction(activeCase.id, {
       actionId: `${activeCase.id}-${row.id}-${Date.now()}`,
       performedAt: new Date().toISOString(),
@@ -24,21 +22,16 @@ export default function DocumentRequestDock({ activeCase }) {
       outcome: `Requested ${row.name}`,
       xpDelta: 2,
       confidenceDelta: 0.01,
-      notes: investigatorNote || row.reason,
+      notes: row.reason,
       metadata: {
         label: row.name,
         status: row.status,
         due: row.due,
         source: creditMode ? "Credit doc rail" : "Evidence request rail",
-        investigatorNote,
         requestReason: row.reason
       }
     });
     setLoggedRequests((current) => ({ ...current, [row.id]: true }));
-  }
-
-  function updateNote(rowId, note) {
-    setRequestNotes((current) => ({ ...current, [rowId]: note }));
   }
 
   return (
@@ -46,7 +39,7 @@ export default function DocumentRequestDock({ activeCase }) {
       <div className="faDocumentRequestHeader">
         <span className="faEyebrow">Document requests</span>
         <strong>{creditMode ? "Credit doc rail" : "Evidence request rail"}</strong>
-        <small>{creditMode ? "Tracks missing support before credit action" : "Tracks open evidence without revealing the answer"}</small>
+        <small>{creditMode ? "Compact missing-support preview" : "Compact open-evidence preview"}</small>
       </div>
       <div className="faDocumentRequestRows">
         {requestRows.map((row) => (
@@ -57,23 +50,13 @@ export default function DocumentRequestDock({ activeCase }) {
             </div>
             <span>{row.status}</span>
             <em>{row.due}</em>
-            <div className="faDocumentRequestNote">
-              <small>Investigator note</small>
-              <textarea
-                value={requestNotes[row.id] || ""}
-                onChange={(event) => updateNote(row.id, event.target.value)}
-                placeholder="Type the note, then submit it to the case..."
-              />
-              <button className="faDocumentRequestSubmit" type="button" onClick={() => logRequest(row)}>
-                {loggedRequests[row.id] ? "Submitted note ✓" : "Submit note to case"}
-              </button>
-            </div>
+            <button type="button" onClick={() => logRequest(row)}>
+              {loggedRequests[row.id] ? "Logged ✓" : "Log request"}
+            </button>
           </article>
         ))}
       </div>
-      <p>
-        Use this as a request tracker, not a verdict. Ask only for lane-relevant fictional documents and keep customer, business, and employee data masked.
-      </p>
+      <p>Use the Summary workflow for full document tracking and notes.</p>
     </section>
   );
 }
