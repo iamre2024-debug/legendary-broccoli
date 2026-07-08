@@ -1,5 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
+import Customer360DossierPanel from "./Customer360DossierPanel.jsx";
 import DeterminationPanel from "./DeterminationPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
@@ -40,13 +41,16 @@ export default function NativePanelRuntime() {
 
     const showRail = Boolean(targets.grid && snapshot.activeCase);
     const showDetermination = Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase);
+    const showCustomer360 = Boolean(targets.pagePanel && snapshot.page === "customer360" && snapshot.activeCase);
 
     document.body.classList.toggle("faNativeRailReady", showRail);
     document.body.classList.toggle("faNativeDeterminationReady", showDetermination);
+    document.body.classList.toggle("faNativeCustomer360Ready", showCustomer360);
 
     return () => {
       document.body.classList.remove("faNativeRailReady");
       document.body.classList.remove("faNativeDeterminationReady");
+      document.body.classList.remove("faNativeCustomer360Ready");
     };
   }, [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
@@ -84,10 +88,20 @@ export default function NativePanelRuntime() {
       )
     : null;
 
+  const customer360 = targets.pagePanel && snapshot.page === "customer360"
+    ? createPortal(
+        <div className="faNativeCustomer360Slot" aria-label="Customer 360 expanded dossier slot">
+          <Customer360DossierPanel activeCase={snapshot.activeCase} />
+        </div>,
+        targets.pagePanel
+      )
+    : null;
+
   return (
     <>
       {rail}
       {determination}
+      {customer360}
     </>
   );
 }
