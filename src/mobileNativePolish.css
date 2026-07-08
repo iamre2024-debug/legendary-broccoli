@@ -9,7 +9,9 @@
 .faNativeRightRail .faCreditRailMini,
 .faNativeDocumentWorkflowSlot > *,
 .faNativeCustomer360Slot > *,
-.faToolReportSaveDock {
+.faToolReportSaveDock,
+.faCaseReportBuilder,
+.faEvidenceDebrief {
   min-width: 0;
 }
 
@@ -106,7 +108,9 @@
 .faSavedReportCenter,
 .faCustomer360Dossier,
 .faLookupReportLauncher,
-.faToolReportSaveDock {
+.faToolReportSaveDock,
+.faCaseReportBuilder,
+.faEvidenceDebrief {
   overflow: hidden;
 }
 
@@ -139,13 +143,17 @@
 
 .faDocWorkflowHeader,
 .faReportCenterHeader,
-.faReportCenterPreviewTop {
+.faReportCenterPreviewTop,
+.faCaseReportHeader,
+.faEvidenceDebriefHeader {
   min-width: 0;
 }
 
 .faDocWorkflowHeader > div,
 .faReportCenterHeader > div,
-.faReportCenterPreviewTop > div {
+.faReportCenterPreviewTop > div,
+.faCaseReportHeader > div,
+.faEvidenceDebriefHeader > div {
   min-width: 0;
 }
 
@@ -161,6 +169,12 @@
   .faNativeRightRail .faCreditRailMini {
     grid-column: 1 / -1;
   }
+
+  .faNativeRightRail[data-page="summary"],
+  .faNativeRightRail[data-page="determination"],
+  .faNativeRightRail[data-page="debrief"] {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
 }
 
 @media (max-width: 720px) {
@@ -173,6 +187,12 @@
     gap: 12px;
   }
 
+  .faNativeRightRail[data-page="summary"],
+  .faNativeRightRail[data-page="determination"],
+  .faNativeRightRail[data-page="debrief"] {
+    display: none;
+  }
+
   .faNativeRightRail .faRailCard,
   .faNativeRightRail .faDocumentRequestDock,
   .faNativeRightRail .faCreditRailMini,
@@ -180,7 +200,9 @@
   .faSavedReportCenter,
   .faCustomer360Dossier,
   .faLookupReportLauncher,
-  .faToolReportSaveDock {
+  .faToolReportSaveDock,
+  .faCaseReportBuilder,
+  .faEvidenceDebrief {
     border-radius: 22px;
     padding: 14px;
   }
@@ -202,7 +224,9 @@
   .faDocumentRequestHeader strong,
   .faDocWorkflowHeader h3,
   .faReportCenterHeader h3,
-  .faReportCenterPreviewTop h4 {
+  .faReportCenterPreviewTop h4,
+  .faCaseReportHeader h3,
+  .faEvidenceDebriefHeader h3 {
     font-size: 1.05rem;
     line-height: 1.22;
     margin-top: 3px;
@@ -218,7 +242,9 @@
   }
 
   .faDocWorkflowStats,
-  .faReportCenterStats {
+  .faReportCenterStats,
+  .faCaseReportStats,
+  .faEvidenceDebriefStats {
     gap: 10px;
   }
 
@@ -226,7 +252,9 @@
   .faSavedReportCard,
   .faReportCenterPreview,
   .faReportSourceSummary,
-  .faReportCenterSections section {
+  .faReportCenterSections section,
+  .faCaseReportSection,
+  .faEvidenceDebriefSection {
     border-radius: 18px;
   }
 
@@ -261,12 +289,15 @@
   .faSavedReportCenter,
   .faCustomer360Dossier,
   .faLookupReportLauncher,
-  .faToolReportSaveDock {
+  .faToolReportSaveDock,
+  .faCaseReportBuilder,
+  .faEvidenceDebrief {
     padding: 12px;
   }
 
   .faDocWorkflowHeader > strong,
-  .faReportCenterHeader > strong {
+  .faReportCenterHeader > strong,
+  .faEvidenceDebriefHeader > strong {
     min-width: 46px;
     width: 46px;
     height: 46px;
