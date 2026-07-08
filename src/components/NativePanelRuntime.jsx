@@ -7,62 +7,49 @@ import LookupReportLauncherPanel from "./LookupReportLauncherPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
 import SavedReportCenterPanel from "./SavedReportCenterPanel.jsx";
 import { saveState } from "../utils/storage.js";
+import { useNativeBodyClasses, useNativePortalTargets } from "../hooks/useNativePortalTargets.js";
 import {
   appendAction,
   buildActiveCaseState,
   readWorkstationSnapshot,
+  WORKSTATION_STORAGE_EVENT,
   workstationKey,
   writeCaseMap as writeRuntimeCaseMap
 } from "../data/workstationRuntimeState.js";
 
 export default function NativePanelRuntime() {
   const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
-  const [targets, setTargets] = useState(() => findTargets());
+  const targets = useNativePortalTargets();
 
   const caseState = useMemo(() => buildActiveCaseState(snapshot), [snapshot]);
+  const nativeClassMap = useMemo(() => ({
+    faNativeRailReady: Boolean(targets.grid && snapshot.activeCase),
+    faNativeDeterminationReady: Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase),
+    faNativeCustomer360Ready: Boolean(targets.pagePanel && snapshot.page === "customer360" && snapshot.activeCase),
+    faNativeDocumentWorkflowReady: Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase),
+    faNativeReportCenterReady: Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase)
+  }), [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
+
+  useNativeBodyClasses(nativeClassMap);
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
-    const refresh = () => {
-      setSnapshot(readWorkstationSnapshot());
-      setTargets(findTargets());
-    };
+    const refresh = () => setSnapshot(readWorkstationSnapshot());
 
     refresh();
     const interval = window.setInterval(refresh, 600);
     window.addEventListener("click", refresh, true);
     window.addEventListener("storage", refresh);
+    window.addEventListener(WORKSTATION_STORAGE_EVENT, refresh);
 
     return () => {
       window.clearInterval(interval);
       window.removeEventListener("click", refresh, true);
       window.removeEventListener("storage", refresh);
+      window.removeEventListener(WORKSTATION_STORAGE_EVENT, refresh);
     };
   }, []);
-
-  useEffect(() => {
-    if (typeof document === "undefined") return undefined;
-
-    const showRail = Boolean(targets.grid && snapshot.activeCase);
-    const showDetermination = Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase);
-    const showCustomer360 = Boolean(targets.pagePanel && snapshot.page === "customer360" && snapshot.activeCase);
-    const showDocumentWorkflow = Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase);
-
-    document.body.classList.toggle("faNativeRailReady", showRail);
-    document.body.classList.toggle("faNativeDeterminationReady", showDetermination);
-    document.body.classList.toggle("faNativeCustomer360Ready", showCustomer360);
-    document.body.classList.toggle("faNativeDocumentWorkflowReady", showDocumentWorkflow);
-    document.body.classList.toggle("faNativeReportCenterReady", showDocumentWorkflow);
-
-    return () => {
-      document.body.classList.remove("faNativeRailReady");
-      document.body.classList.remove("faNativeDeterminationReady");
-      document.body.classList.remove("faNativeCustomer360Ready");
-      document.body.classList.remove("faNativeDocumentWorkflowReady");
-      document.body.classList.remove("faNativeReportCenterReady");
-    };
-  }, [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
   if (!snapshot.activeCase) return null;
 
@@ -157,13 +144,4 @@ function completeCase(snapshot, determination, setSnapshot) {
   if (typeof window !== "undefined") {
     window.setTimeout(() => window.location.reload(), 120);
   }
-}
-
-function findTargets() {
-  if (typeof document === "undefined") return { grid: null, pagePanel: null };
-
-  return {
-    grid: document.querySelector(".faContentGrid"),
-    pagePanel: document.querySelector(".faPagePanel")
-  };
 }
