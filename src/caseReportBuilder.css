@@ -1,0 +1,82 @@
+.faCaseReportBuilder {
+  margin-top: 18px;
+  border: 1px solid rgba(244, 114, 255, 0.24);
+  border-radius: 24px;
+  padding: 16px;
+}
+
+.faCaseReportHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.faCaseReportHeader h3,
+.faCaseReportHeader p {
+  margin: 0;
+}
+
+.faCaseReportHeader button {
+  border-radius: 999px;
+  padding: 10px 13px;
+  cursor: pointer;
+}
+
+.faCaseReportStats,
+.faCaseReportGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.faCaseReportStats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 16px 0;
+}
+
+.faCaseReportStats span,
+.faCaseReportSection {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.faCaseReportStats b {
+  display: block;
+  color: #fff;
+  font-size: 1.18rem;
+}
+
+.faCaseReportGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.faCaseReportSection h4 {
+  margin: 0 0 8px;
+}
+
+.faCaseReportSection ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.faCaseReportSection li + li {
+  margin-top: 6px;
+}
+
+.faCaseReportGuardrail {
+  margin: 14px 0 0;
+  color: rgba(244, 235, 255, 0.72);
+}
+
+@media (max-width: 820px) {
+  .faCaseReportHeader {
+    flex-direction: column;
+  }
+
+  .faCaseReportStats,
+  .faCaseReportGrid {
+    grid-template-columns: 1fr;
+  }
+}
