@@ -1,0 +1,53 @@
+/* Investigator note box for document request logging. */
+
+.faDocumentRequestNote {
+  grid-column: 1 / -1;
+  display: grid;
+  gap: 7px;
+  margin-top: 2px;
+}
+
+.faDocumentRequestNote small {
+  color: #8de8ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.faDocumentRequestNote textarea {
+  width: 100%;
+  min-height: 96px;
+  border: 1px solid rgba(255, 255, 255, 0.13);
+  border-radius: 16px;
+  color: #fff;
+  background: rgba(8, 6, 24, 0.62);
+  padding: 11px 12px;
+  resize: vertical;
+  outline: none;
+}
+
+.faDocumentRequestNote textarea::placeholder {
+  color: rgba(244, 235, 255, 0.46);
+}
+
+.faDocumentRequestNote textarea:focus {
+  border-color: rgba(141, 232, 255, 0.42);
+  box-shadow: 0 0 0 3px rgba(141, 232, 255, 0.08);
+}
+
+.faDocumentRequestRow button {
+  grid-column: 1 / -1;
+  width: 100%;
+  border: 1px solid rgba(141, 232, 255, 0.24);
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(247, 87, 255, 0.24), rgba(60, 210, 255, 0.14));
+  padding: 11px 14px;
+}
+
+@media (max-width: 720px) {
+  .faDocumentRequestNote textarea {
+    min-height: 112px;
+    font-size: 1rem;
+  }
+}
