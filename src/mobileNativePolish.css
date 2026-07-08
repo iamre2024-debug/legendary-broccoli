@@ -8,7 +8,8 @@
 .faNativeRightRail .faDocumentRequestDock,
 .faNativeRightRail .faCreditRailMini,
 .faNativeDocumentWorkflowSlot > *,
-.faNativeCustomer360Slot > * {
+.faNativeCustomer360Slot > *,
+.faToolReportSaveDock {
   min-width: 0;
 }
 
@@ -104,8 +105,36 @@
 .faDocumentWorkflow,
 .faSavedReportCenter,
 .faCustomer360Dossier,
-.faLookupReportLauncher {
+.faLookupReportLauncher,
+.faToolReportSaveDock {
   overflow: hidden;
+}
+
+.faToolReportSaveDock {
+  margin: 16px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 14px;
+  border-color: rgba(141, 232, 255, 0.26);
+}
+
+.faToolReportSaveDock h4 {
+  margin: 4px 0 6px;
+}
+
+.faToolReportSaveDock p,
+.faToolReportSaveDock small {
+  color: rgba(244, 235, 255, 0.72);
+  line-height: 1.45;
+}
+
+.faToolReportSaveDock button {
+  border: 1px solid rgba(141, 232, 255, 0.24);
+  border-radius: 16px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(247, 87, 255, 0.24), rgba(60, 210, 255, 0.14));
+  padding: 11px 14px;
 }
 
 .faDocWorkflowHeader,
@@ -150,9 +179,18 @@
   .faDocumentWorkflow,
   .faSavedReportCenter,
   .faCustomer360Dossier,
-  .faLookupReportLauncher {
+  .faLookupReportLauncher,
+  .faToolReportSaveDock {
     border-radius: 22px;
     padding: 14px;
+  }
+
+  .faToolReportSaveDock {
+    grid-template-columns: 1fr;
+  }
+
+  .faToolReportSaveDock button {
+    width: 100%;
   }
 
   .faDocumentRequestHeader {
@@ -222,7 +260,8 @@
   .faDocumentWorkflow,
   .faSavedReportCenter,
   .faCustomer360Dossier,
-  .faLookupReportLauncher {
+  .faLookupReportLauncher,
+  .faToolReportSaveDock {
     padding: 12px;
   }
 
