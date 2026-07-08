@@ -6,6 +6,7 @@ import ToolReportSaveRuntime from "./components/ToolReportSaveRuntime.jsx";
 import SavedReportCenterRuntime from "./components/SavedReportCenterRuntime.jsx";
 import TimelineActionImpactRuntime from "./components/TimelineActionImpactRuntime.jsx";
 import CaseReportBuilderRuntime from "./components/CaseReportBuilderRuntime.jsx";
+import EvidenceDebriefRuntime from "./components/EvidenceDebriefRuntime.jsx";
 import "./nativePanelRuntime.css";
 import "./lookupReportLauncher.css";
 import "./reportCenter.css";
@@ -15,6 +16,7 @@ import "./toolReportSaveDock.css";
 import "./timelineActionImpactRuntime.css";
 import "./documentRequestNotes.css";
 import "./caseReportBuilder.css";
+import "./evidenceDebrief.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
@@ -27,6 +29,7 @@ export default function AppWorkstationNativeBridge() {
       <SavedReportCenterRuntime />
       <TimelineActionImpactRuntime />
       <CaseReportBuilderRuntime />
+      <EvidenceDebriefRuntime />
     </>
   );
 }
