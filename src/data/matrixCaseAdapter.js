@@ -1,5 +1,6 @@
 import { CLAIM_FAMILIES, generateCase as generateLegacyCase, toolNavByLane } from "./fraudAcademyEngine";
 import { buildCustomerProfileSpine, profileRowsForTool } from "./customerProfileSpine";
+import { fullHistoryRowsForTool } from "./customerToolHistory";
 import { buildScenarioProvenance, getScenarioForLane, MATRIX_SCENARIO_VERSION } from "./matrixScenarioRegistry";
 import { resolveToolDefinition } from "./toolRegistry";
 
@@ -81,7 +82,7 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, c
     const baseRows = Array.isArray(currentTool.rows) ? currentTool.rows : [];
     const baseTimeline = Array.isArray(currentTool.timeline) ? currentTool.timeline : [];
     const scenarioDocs = flattenDocuments(scenario.documents);
-    const profileRows = profileRowsForTool(toolId, customerProfile);
+    const profileRows = fullHistoryRowsForTool(toolId, customerProfile, profileRowsForTool(toolId, customerProfile));
 
     enrichedTools[toolId] = {
       ...currentTool,
@@ -202,7 +203,7 @@ function mergeDocumentBuckets(baseDocuments = {}, scenarioDocuments = {}, custom
   merged["Customer 360 / Lookup Records"] = uniqueList([
     ...(merged["Customer 360 / Lookup Records"] || []),
     "Customer 360 dossier",
-    "Fictional SSN/EIN + DOB lookup trail",
+    "Fictional profile lookup trail",
     "Login/IP/device baseline comparison",
     ...(customerProfile.backgroundReportOutline || [])
   ]);
