@@ -5,6 +5,7 @@ import DeterminationPanel from "./DeterminationPanel.jsx";
 import DocumentRequestWorkflowPanel from "./DocumentRequestWorkflowPanel.jsx";
 import LookupReportLauncherPanel from "./LookupReportLauncherPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
+import SavedReportCenterPanel from "./SavedReportCenterPanel.jsx";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
 import { loadState, saveState } from "../utils/storage.js";
 
@@ -50,12 +51,14 @@ export default function NativePanelRuntime() {
     document.body.classList.toggle("faNativeDeterminationReady", showDetermination);
     document.body.classList.toggle("faNativeCustomer360Ready", showCustomer360);
     document.body.classList.toggle("faNativeDocumentWorkflowReady", showDocumentWorkflow);
+    document.body.classList.toggle("faNativeReportCenterReady", showDocumentWorkflow);
 
     return () => {
       document.body.classList.remove("faNativeRailReady");
       document.body.classList.remove("faNativeDeterminationReady");
       document.body.classList.remove("faNativeCustomer360Ready");
       document.body.classList.remove("faNativeDocumentWorkflowReady");
+      document.body.classList.remove("faNativeReportCenterReady");
     };
   }, [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
@@ -105,8 +108,9 @@ export default function NativePanelRuntime() {
 
   const documentWorkflow = targets.pagePanel && snapshot.page === "summary"
     ? createPortal(
-        <div className="faNativeDocumentWorkflowSlot" aria-label="Document request workflow slot">
+        <div className="faNativeDocumentWorkflowSlot" aria-label="Document request workflow and Report Center slot">
           <DocumentRequestWorkflowPanel activeCase={snapshot.activeCase} />
+          <SavedReportCenterPanel activeCase={snapshot.activeCase} />
         </div>,
         targets.pagePanel
       )
@@ -220,10 +224,10 @@ function notifyLocalRuntime() {
   window.dispatchEvent(new Event("storage"));
 }
 
-function progressFor(activeCase, reviewed = [], checks = {}, determination = "") {
-  const tools = toolNavByLane[activeCase.lane] || [];
-  const toolScore = tools.length ? Math.round((reviewed.length / tools.length) * 45) : 0;
-  const indicatorScore = ((checks.suspicious || []).length + (checks.normal || []).length) > 0 ? 25 : 0;
-  const determinationScore = determination ? 30 : 0;
-  return Math.min(100, toolScore + indicatorScore + determinationScore);
+function progressFor(activeCase, reviewedTools = [], indicators = EMPTY_INDICATORS, determination = "") {
+  const laneTools = toolNavByLane[activeCase?.lane] || [];
+  const toolProgress = laneTools.length ? (reviewedTools.length / laneTools.length) * 55 : 0;
+  const indicatorProgress = ((indicators.suspicious?.length || 0) + (indicators.normal?.length || 0)) > 0 ? 20 : 0;
+  const determinationProgress = determination ? 25 : 0;
+  return Math.min(100, Math.round(toolProgress + indicatorProgress + determinationProgress));
 }
