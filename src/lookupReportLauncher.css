@@ -151,7 +151,8 @@
 }
 
 .faLookupResultActions em,
-.faLookupReportPreviewTop > strong {
+.faLookupReportPreviewTop > strong,
+.faLookupPreviewActions > strong {
   width: fit-content;
   justify-self: end;
   border-radius: 999px;
@@ -162,13 +163,15 @@
 }
 
 .faLookupResultActions em[data-tone="good"],
-.faLookupReportPreview[data-tone="good"] .faLookupReportPreviewTop > strong {
+.faLookupReportPreview[data-tone="good"] .faLookupReportPreviewTop > strong,
+.faLookupReportPreview[data-tone="good"] .faLookupPreviewActions > strong {
   color: #b9ffea;
   background: rgba(63, 220, 176, 0.14);
 }
 
 .faLookupResultActions em[data-tone="review"],
-.faLookupReportPreview[data-tone="review"] .faLookupReportPreviewTop > strong {
+.faLookupReportPreview[data-tone="review"] .faLookupReportPreviewTop > strong,
+.faLookupReportPreview[data-tone="review"] .faLookupPreviewActions > strong {
   color: #ffe0a6;
   background: rgba(255, 190, 92, 0.14);
 }
@@ -202,6 +205,32 @@
   padding-left: 12px;
 }
 
+.faLookupPreviewActions {
+  display: grid;
+  gap: 10px;
+  justify-items: end;
+  min-width: 190px;
+}
+
+.faLookupPreviewActions button {
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  border-radius: 999px;
+  color: #fff;
+  background: linear-gradient(135deg, rgba(247, 87, 255, 0.32), rgba(60, 210, 255, 0.16));
+  padding: 10px 13px;
+  cursor: pointer;
+  box-shadow: 0 0 24px rgba(247, 87, 255, 0.14);
+}
+
+.faLookupSaveStatus {
+  margin: 12px 0 0;
+  border: 1px solid rgba(100, 255, 198, 0.28);
+  border-radius: 16px;
+  color: #b9ffea;
+  background: rgba(63, 220, 176, 0.1);
+  padding: 10px 12px;
+}
+
 @media (max-width: 980px) {
   .faLookupReportHeader,
   .faLookupReportPreviewTop {
@@ -216,7 +245,13 @@
   }
 
   .faLookupResultActions em,
-  .faLookupReportPreviewTop > strong {
+  .faLookupReportPreviewTop > strong,
+  .faLookupPreviewActions > strong {
     justify-self: start;
+  }
+
+  .faLookupPreviewActions {
+    justify-items: start;
+    min-width: 0;
   }
 }
