@@ -8,6 +8,7 @@ import {
   isCreditDecisionRailCase
 } from "./creditDecisionRail.js";
 import { validateCustomerToolHistoryCoverage } from "./customerToolHistory.js";
+import { validateToolIoCoverage } from "./toolIoContracts.js";
 
 export const SOURCE_HIERARCHY = [
   {
@@ -66,6 +67,7 @@ export const CORE_BUILD_RULES = [
   "Customer 360 is the permanent dossier; search-style lookups belong in the lane tools.",
   "Reports are detailed internal-bank-style previews for report-heavy searches, while tools can remain snapshot + search workspaces.",
   "Every generated tool should carry Customer 360 relationship, profile-change, prior-claim, and lookup context.",
+  "Every tool should expose a clear expected input and expected output contract.",
   "The UI should stay professional, mobile-first, neon, bubbly, and investigator-workstation flavored."
 ];
 
@@ -93,6 +95,7 @@ export function validateFraudAcademyGuardrails() {
   const warnings = [];
   const missingLanes = REQUIRED_LANES.filter((lane) => !CLAIM_FAMILIES[lane]);
   const customerHistoryCoverage = validateCustomerToolHistoryCoverage(toolNavByLane);
+  const toolIoCoverage = validateToolIoCoverage(toolNavByLane);
 
   if (missingLanes.length) {
     warnings.push(`Missing required lane families: ${missingLanes.join(", ")}`);
@@ -139,6 +142,10 @@ export function validateFraudAcademyGuardrails() {
     warnings.push(`Customer profile history missing from tool IDs: ${customerHistoryCoverage.missing.join(", ")}`);
   }
 
+  if (!toolIoCoverage.ok) {
+    warnings.push(`Tool input/output contract issue. Missing: ${toolIoCoverage.missing.join(", ") || "none"}. Incomplete: ${toolIoCoverage.incomplete.join(", ") || "none"}.`);
+  }
+
   return {
     ok: warnings.length === 0,
     warnings,
@@ -147,7 +154,8 @@ export function validateFraudAcademyGuardrails() {
     ruleCount: CORE_BUILD_RULES.length,
     laneCount: Object.keys(CLAIM_FAMILIES).length,
     toolLaneCount: Object.keys(toolNavByLane).length,
-    customerHistoryCoverage
+    customerHistoryCoverage,
+    toolIoCoverage
   };
 }
 
