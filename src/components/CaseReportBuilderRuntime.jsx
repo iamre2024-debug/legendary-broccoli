@@ -50,12 +50,12 @@ export default function CaseReportBuilderRuntime() {
   if (!shouldShow) return null;
 
   return createPortal(
-    <section className="faGlass faCaseReportBuilder" aria-label="Case report builder">
+    <section className="faGlass faCaseReportBuilder" aria-label="Case report draft builder">
       <div className="faCaseReportHeader">
         <div>
-          <span className="faEyebrow">Case Report Builder</span>
-          <h3>Evidence-based case report draft</h3>
-          <p>Builds from reviewed tools, saved reports, document actions, indicators, and notes. No final answer is revealed here.</p>
+          <span className="faEyebrow">Case Report Draft</span>
+          <h3>Investigator report before determination</h3>
+          <p>Builds from reviewed tools, saved reports, document actions, indicators, and notes. This is not Report Center and not the senior debrief.</p>
         </div>
         <button type="button" onClick={copyReport}>{copied ? "Copied ✓" : "Copy draft"}</button>
       </div>
@@ -69,13 +69,13 @@ export default function CaseReportBuilderRuntime() {
       <div className="faCaseReportGrid">
         <ReportSection title="Case posture" items={report.posture} />
         <ReportSection title="Evidence reviewed" items={report.evidenceReviewed} />
-        <ReportSection title="Saved reports" items={report.savedReportItems} empty="No reports saved yet." />
+        <ReportSection title="Saved reports referenced" items={report.savedReportItems} empty="No reports saved yet." />
         <ReportSection title="Action impact" items={report.actionItems} empty="No report or document actions logged yet." />
         <ReportSection title="Investigator notes" items={report.noteItems} empty="No investigator notes written yet." />
         <ReportSection title="Open gaps" items={report.openGaps} />
       </div>
 
-      <p className="faCaseReportGuardrail">This report is a training draft. Determination and senior review stay locked until the learner submits an outcome and justification.</p>
+      <p className="faCaseReportGuardrail">Draft-only guardrail: no senior reference, QA score, or correct answer appears here. Those stay locked until Determination and Senior Evidence Debrief.</p>
     </section>,
     target
   );
