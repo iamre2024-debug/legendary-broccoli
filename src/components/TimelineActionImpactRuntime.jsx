@@ -1,13 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { REPORT_CENTER_GUARDRAIL, REPORT_CENTER_UPDATED_EVENT } from "../data/savedReportCenter.js";
-import { loadState } from "../utils/storage.js";
-
-const STORE = "fa-v3-interactive-investigator";
-const key = (name) => `${STORE}:${name}`;
+import { readWorkstationSnapshot, WORKSTATION_STORAGE_EVENT } from "../data/workstationRuntimeState.js";
 
 export default function TimelineActionImpactRuntime() {
-  const [snapshot, setSnapshot] = useState(() => readSnapshot());
+  const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
   const [target, setTarget] = useState(() => findTarget());
 
   const actions = useMemo(() => {
@@ -24,7 +21,7 @@ export default function TimelineActionImpactRuntime() {
     if (typeof window === "undefined") return undefined;
 
     const refresh = () => {
-      setSnapshot(readSnapshot());
+      setSnapshot(readWorkstationSnapshot());
       setTarget(findTarget());
     };
 
@@ -33,12 +30,14 @@ export default function TimelineActionImpactRuntime() {
     window.addEventListener("click", refresh, true);
     window.addEventListener("storage", refresh);
     window.addEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
+    window.addEventListener(WORKSTATION_STORAGE_EVENT, refresh);
 
     return () => {
       window.clearInterval(interval);
       window.removeEventListener("click", refresh, true);
       window.removeEventListener("storage", refresh);
       window.removeEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
+      window.removeEventListener(WORKSTATION_STORAGE_EVENT, refresh);
     };
   }, []);
 
@@ -94,19 +93,6 @@ function RuntimeAction({ action }) {
       )}
     </article>
   );
-}
-
-function readSnapshot() {
-  const cases = loadState(key("cases"), []);
-  const completed = loadState(key("completed"), []);
-  const activeCaseId = loadState(key("activeCaseId"), cases[0]?.id);
-  const activeCase = cases.find((item) => item.id === activeCaseId) || cases.find((item) => !completed.includes(item.id)) || cases[0] || null;
-
-  return {
-    activeCase,
-    page: loadState(key("page"), "dashboard"),
-    actionLog: loadState(key("actionLog"), {})
-  };
 }
 
 function findTarget() {
