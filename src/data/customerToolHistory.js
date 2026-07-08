@@ -1,7 +1,8 @@
 export function fullHistoryRowsForTool(toolId, profile = {}, existingRows = []) {
   const baseRows = commonHistoryRows(profile);
   const specificRows = specificHistoryRows(toolId, profile);
-  return uniqueRows([...existingRows, ...baseRows, ...specificRows]);
+  const directoryRows = searchDirectoryRows(profile, toolId);
+  return uniqueRows([...existingRows, ...baseRows, ...specificRows, ...directoryRows]);
 }
 
 export function validateCustomerToolHistoryCoverage(toolNavByLane = {}) {
@@ -35,7 +36,10 @@ export function validateCustomerToolHistoryCoverage(toolNavByLane = {}) {
     products: [{ product: "Checking", standing: "No NSF in last 90 days" }, { product: "Credit Card", standing: "Minimum paid on time" }],
     loginSessions: [{ eventText: "07/15/2025, 10:24 PM, IP 198.51.100.24, iPhone 14, Safari, MFA passed" }],
     deviceInventory: [{}, { linkedProfiles: "1 other training profile" }],
-    ipHistory: [{ count: 14 }, { count: 8, otherProfiles: 1, region: "Dallas region", proxy: "No proxy indicator shown in training data" }]
+    ipHistory: [{ count: 14 }, { count: 8, otherProfiles: 1, region: "Dallas region", proxy: "No proxy indicator shown in training data" }],
+    employeeDirectory: [{ employeeId: "EMP-1042", name: "Nia Carter", priorBankAccountId: "BANK-PRIOR-7712", requestedBankAccountId: "BANK-NEW-8839", trustedPhone: "(555) 312-4418", trustedEmail: "nia.carter@example.test", verificationStatus: "Trusted callback pending" }],
+    bankAccounts: [{ bankAccountId: "BANK-NEW-8839", bankName: "Fictional Bank", accountMasked: "****8839", ownershipMatch: "Needs verification", status: "First-seen destination" }],
+    searchableEntities: [{ type: "Employee ID", value: "EMP-1042", use: "Open Employee Profile." }, { type: "Bank account", value: "BANK-NEW-8839", use: "Open Bank Verification." }]
   };
 
   const configuredTools = [...new Set(Object.values(toolNavByLane).flat().map((tool) => tool.id).filter(Boolean))];
@@ -74,12 +78,12 @@ function specificHistoryRows(toolId, profile) {
     phone: [row("Phone lookup", `${keys.phone} · fictional carrier record tied to ${maskName(profile.name)}`, "neutral")],
     email: [row("Email lookup", `${keys.email} · domain example.test reserved for training`, "neutral")],
     financial: [row("Customer relationship", `${profile.relationshipLength} · ${profile.accountStanding}`, "neutral")],
-    bank: [row("Bank/customer lookup", `${profile.customerId} · ${keys.maskedId} · ${profile.accountStanding}`, "neutral")],
+    bank: [row("Bank/customer lookup", `${profile.customerId} · ${keys.maskedId} · ${profile.accountStanding}`, "neutral"), ...bankRows(profile)],
     ownerKyc: identityRows(profile),
     kyb: [row("Business profile lookup", `${profile.name} · ${keys.maskedId} · ${profile.address || "address pending"}`, "neutral")],
     businessRegistration: [row("Entity address", profile.address || "address pending", "neutral")],
-    payrollProfile: [row("Employer/customer spine", `${profile.name} · ${profile.customerId}`, "neutral")],
-    employee: [row("Employee identity spine", `${maskName(profile.name)} · ${keys.maskedId} · ${keys.phone}`, "neutral")],
+    payrollProfile: [row("Employer/customer spine", `${profile.name} · ${profile.customerId}`, "neutral"), ...employeeRows(profile)],
+    employee: [row("Employee identity spine", employeeSummary(profile), "neutral"), ...employeeRows(profile), ...bankRows(profile)],
     transaction: [row("Transaction customer fit", productStanding(profile), "neutral")],
     authorization: [row("Authorization baseline", `${profile.normalBehavior?.device || "Device pending"} · ${profile.normalBehavior?.loginLocation || "Market pending"}`, "neutral")],
     merchant: [row("Merchant/contact history", summarizePriorClaims(profile), "neutral")],
@@ -89,31 +93,54 @@ function specificHistoryRows(toolId, profile) {
     receipt: [row("Receipt comparison profile", `${profile.name} · normal spending: ${profile.normalBehavior?.spending || "spending baseline pending"}`, "neutral")],
     fulfillment: [row("Fulfillment/customer contact", summarizeRecentContact(profile), "neutral")],
     terms: [row("Policy review context", `${profile.relationshipLength} relationship · ${profile.accountStanding}`, "neutral")],
-    changeRequest: [row("Change request spine", profile.profileChanges?.[0] ? `${profile.profileChanges[0].event} · ${profile.profileChanges[0].channel} · ${profile.profileChanges[0].ip}` : "No change event generated", "neutral")],
+    changeRequest: [row("Change request spine", profile.profileChanges?.[0] ? `${profile.profileChanges[0].event} · ${profile.profileChanges[0].channel} · ${profile.profileChanges[0].ip}` : "No change event generated", "neutral"), ...employeeRows(profile), ...bankRows(profile)],
     admin: [row("Admin/customer baseline", `${profile.customerId} · trusted contact path: ${profile.preferredContact}`, "neutral")],
-    callback: [row("Trusted callback source", `${profile.preferredContact} · ${keys.phone} · do not rely on incoming message only`, "neutral")],
-    payrollRun: [row("Payroll/account standing", `${profile.accountStanding} · products: ${productNames(profile)}`, "neutral")],
+    callback: [row("Trusted callback source", `${profile.preferredContact} · ${keys.phone} · do not rely on incoming message only`, "neutral"), ...employeeRows(profile)],
+    payrollRun: [row("Payroll/account standing", `${profile.accountStanding} · products: ${productNames(profile)}`, "neutral"), ...employeeRows(profile), ...bankRows(profile)],
     emailHeaders: [row("Known email/contact", `${keys.email} · trusted contact source remains Customer 360`, "neutral")],
     domain: [row("Domain/contact comparison", `${keys.email} · compare sender domain to existing profile`, "neutral")],
-    sender: [row("Sender history profile", summarizeRecentContact(profile), "neutral")],
-    beneficiary: [row("Beneficiary/customer link", `${profile.customerId} · ${keys.maskedId} · new destination must compare to prior products`, "neutral")],
-    paymentTimeline: [row("Payment timeline baseline", `${profile.relationshipLength} · ${profile.accountStanding} · ${profile.normalBehavior?.deposits || "deposit baseline pending"}`, "neutral")],
+    sender: [row("Sender history profile", summarizeRecentContact(profile), "neutral"), ...employeeRows(profile)],
+    beneficiary: [row("Beneficiary/customer link", `${profile.customerId} · ${keys.maskedId} · new destination must compare to prior products`, "neutral"), ...bankRows(profile)],
+    paymentTimeline: [row("Payment timeline baseline", `${profile.relationshipLength} · ${profile.accountStanding} · ${profile.normalBehavior?.deposits || "deposit baseline pending"}`, "neutral"), ...bankRows(profile)],
     income: [row("Income/deposit baseline", `${profile.normalBehavior?.deposits || "deposit baseline pending"} · ${profile.accountStanding}`, "neutral")],
-    employment: [row("Employment/contact spine", `${maskName(profile.name)} · ${keys.phone} · ${keys.email}`, "neutral")],
+    employment: [row("Employment/contact spine", `${maskName(profile.name)} · ${keys.phone} · ${keys.email}`, "neutral"), ...employeeRows(profile)],
     dti: [row("Credit relationship context", `${profile.relationshipLength} · ${productNames(profile)}`, "neutral")],
     creditReport: [row("Credit profile context", `${keys.maskedId} · ${profile.accountStanding} · prior claims ${profile.priorClaims?.length || 0}`, "neutral")],
-    bankStatements: [row("Cash-flow history", `${profile.normalBehavior?.deposits || "deposits pending"} · ${profile.normalBehavior?.spending || "spending pending"}`, "neutral")],
+    bankStatements: [row("Cash-flow history", `${profile.normalBehavior?.deposits || "deposits pending"} · ${profile.normalBehavior?.spending || "spending pending"}`, "neutral"), ...bankRows(profile)],
     paymentHistory: [row("Payment history profile", productStanding(profile), "neutral")],
     utilization: [row("Exposure/utilization profile", productStanding(profile), "neutral")],
     inquiries: [row("Application velocity context", `${profile.customerId} · ${keys.maskedId} · compare inquiries to relationship length ${profile.relationshipLength}`, "neutral")],
     revenue: [row("Business revenue baseline", `${profile.normalBehavior?.deposits || "business deposits pending"} · ${profile.accountStanding}`, "neutral")],
-    positivePay: [row("Issued-file customer spine", `${profile.customerId} · ${profile.name} · ${profile.accountStanding}`, "neutral")],
-    checkImage: [row("Check image profile context", `${profile.name} · ${keys.maskedId} · compare payee/signature to fictional account history`, "neutral")],
-    endorsement: [row("Endorsement/customer link", `${profile.customerId} · destination ownership should match prior relationship`, "neutral")],
-    velocity: [row("Velocity baseline", `${profile.normalBehavior?.spending || "spending pending"} · ${profile.normalBehavior?.deposits || "deposits pending"}`, "neutral")]
+    positivePay: [row("Issued-file customer spine", `${profile.customerId} · ${profile.name} · ${profile.accountStanding}`, "neutral"), ...bankRows(profile)],
+    checkImage: [row("Check image profile context", `${profile.name} · ${keys.maskedId} · compare payee/signature to fictional account history`, "neutral"), ...bankRows(profile)],
+    endorsement: [row("Endorsement/customer link", `${profile.customerId} · destination ownership should match prior relationship`, "neutral"), ...bankRows(profile)],
+    velocity: [row("Velocity baseline", `${profile.normalBehavior?.spending || "spending pending"} · ${profile.normalBehavior?.deposits || "deposits pending"}`, "neutral"), ...bankRows(profile)]
   };
 
   return rows[toolId] || fallbackToolRows(toolId, profile);
+}
+
+function searchDirectoryRows(profile, toolId) {
+  const entities = profile.searchableEntities || [];
+  const isSearchHeavy = ["employee", "bank", "link", "callback", "beneficiary", "changeRequest", "payrollRun", "paymentTimeline", "positivePay", "checkImage", "endorsement", "velocity"].includes(toolId);
+  if (!isSearchHeavy || !entities.length) return [];
+  return entities.slice(0, 8).map((entity) => row(`Search ${entity.type}`, `${entity.value} · ${entity.use}`, "neutral"));
+}
+
+function employeeRows(profile) {
+  const employees = profile.employeeDirectory || [];
+  return employees.slice(0, 3).map((employee) => row(`Employee ${employee.employeeId}`, `${employee.name} · ${employee.role || "role pending"} · ${employee.verificationStatus || "verification pending"} · prior bank ${employee.priorBankAccountId || "pending"} · requested bank ${employee.requestedBankAccountId || "pending"}`, "neutral"));
+}
+
+function bankRows(profile) {
+  const accounts = profile.bankAccounts || [];
+  return accounts.slice(0, 4).map((account) => row(`Bank ${account.bankAccountId}`, `${account.bankName} · ${account.accountMasked} · ${account.ownerType || "owner type pending"} · ${account.ownershipMatch || "ownership pending"} · ${account.status || "status pending"}`, account.status === "First-seen destination" ? "caution" : "neutral"));
+}
+
+function employeeSummary(profile) {
+  const employee = profile.employeeDirectory?.[0];
+  if (!employee) return `${maskName(profile.name)} · employee directory pending`;
+  return `${employee.employeeId} · ${employee.name} · ${employee.trustedPhone} · ${employee.trustedEmail}`;
 }
 
 function identityRows(profile) {
