@@ -4,6 +4,7 @@ import { categoryLabel, resolveToolDefinition } from "../data/toolRegistry.js";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
 
 const toolPageIds = new Set(Object.values(toolNavByLane).flat().map((tool) => tool.id));
+const fullWorkflowPages = new Set(["summary", "determination", "debrief"]);
 
 export default function RightRailPanel({
   activeCase,
@@ -19,17 +20,18 @@ export default function RightRailPanel({
 
   const toolDefinition = toolPageIds.has(page) ? resolveToolDefinition(page) : null;
   const isCompleted = completed.includes(activeCase.id);
-  const showDocumentRequestDock = page !== "summary";
+  const showDocumentRequestDock = !fullWorkflowPages.has(page);
+  const showCreditRailMini = !fullWorkflowPages.has(page);
 
   return (
-    <aside className="faRightRail faNativeRightRail">
+    <aside className="faRightRail faNativeRightRail" data-page={page || "unknown"}>
       <section className="faRailCard">
         <span className="faEyebrow">Luna rail</span>
         <h3>Current focus</h3>
         <p>{activeCase.title}</p>
         <small>{activeCase.subtype}</small>
       </section>
-      <CreditRailMini activeCase={activeCase} />
+      {showCreditRailMini && <CreditRailMini activeCase={activeCase} />}
       {showDocumentRequestDock && <DocumentRequestDock activeCase={activeCase} />}
       {toolDefinition && (
         <section className="faRailCard">
