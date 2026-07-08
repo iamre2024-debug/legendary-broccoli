@@ -25,17 +25,40 @@ export default function Customer360DossierPanel({ activeCase }) {
   const bankAccounts = Array.isArray(profile.bankAccounts) ? profile.bankAccounts : [];
   const searchableEntities = Array.isArray(profile.searchableEntities) ? profile.searchableEntities : [];
   const lookupKeys = profile.lookupKeys || {};
+  const dossierStats = [
+    { label: "Directory", value: employeeDirectory.length },
+    { label: "Bank records", value: bankAccounts.length },
+    { label: "Lookup keys", value: searchableEntities.length },
+    { label: "Lane", value: activeCase?.lane || "Case" }
+  ];
 
   return (
     <section className="faGlass faCustomer360Dossier" aria-label="Customer 360 expanded dossier">
-      <SectionTitle
-        eyebrow="Customer 360 expansion"
-        title="Employee, bank, trusted-contact, and lookup directory"
-        aside="Context only"
-      />
-      <p className="faMuted">
-        This permanent dossier gives investigators stable fictional profile context. Use the lane tools to search values and compare records. No score, answer key, or final recommendation appears here.
-      </p>
+      <div className="faCustomer360Hero">
+        <div>
+          <span className="faEyebrow">Customer 360 expansion</span>
+          <h3>Permanent customer dossier</h3>
+          <p>
+            Stable fictional profile context for who the customer is, what changed, and which values should be searched in lane tools. This is context only, never an answer key.
+          </p>
+        </div>
+        <strong>◌</strong>
+      </div>
+
+      <div className="faCustomer360StatRibbon" aria-label="Customer 360 dossier counts">
+        {dossierStats.map((stat) => (
+          <span key={stat.label}>
+            <small>{stat.label}</small>
+            <b>{stat.value}</b>
+          </span>
+        ))}
+      </div>
+
+      <div className="faCustomer360PromptRail">
+        <span>Investigator use</span>
+        <p>Start here for profile context, then move into Identity Intel, Login History, Device/IP, Bank Verification, or Link Analysis to test the story.</p>
+        <p>Document matches, partial matches, missing records, and source names. Do not label the case outcome from this page.</p>
+      </div>
 
       <div className="faCustomer360Grid">
         <section className="faDossierCard faDossierWide">
