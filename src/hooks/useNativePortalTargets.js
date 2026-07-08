@@ -8,6 +8,8 @@ export const DEFAULT_NATIVE_TARGET_SELECTORS = {
   pageStack: [".faPagePanel .faStack", ".faPagePanel"]
 };
 
+const NO_EXTRA_NATIVE_EVENTS = [];
+
 export function readNativePortalTargets(selectors = DEFAULT_NATIVE_TARGET_SELECTORS) {
   if (typeof document === "undefined") return emptyTargets(selectors);
 
@@ -16,7 +18,7 @@ export function readNativePortalTargets(selectors = DEFAULT_NATIVE_TARGET_SELECT
   );
 }
 
-export function useNativePortalTargets({ selectors = DEFAULT_NATIVE_TARGET_SELECTORS, intervalMs = 650, events = [] } = {}) {
+export function useNativePortalTargets({ selectors = DEFAULT_NATIVE_TARGET_SELECTORS, intervalMs = 650, events = NO_EXTRA_NATIVE_EVENTS } = {}) {
   const [targets, setTargets] = useState(() => readNativePortalTargets(selectors));
 
   useEffect(() => {
