@@ -2,7 +2,10 @@ import { loadState, saveState } from "../utils/storage.js";
 
 export const SAVED_REPORTS_KEY = "fa-v3-interactive-investigator:savedReports";
 export const REPORT_CENTER_GUARDRAIL = "Saved reports are fictional training artifacts. They preserve evidence context and lookup/report previews, but they do not reveal or decide the case outcome.";
+
+const ACTION_LOG_KEY = "fa-v3-interactive-investigator:actionLog";
 const MAX_REPORTS = 80;
+const MAX_ACTIONS_PER_CASE = 24;
 
 export function loadSavedReports() {
   const reports = loadState(SAVED_REPORTS_KEY, []);
@@ -16,12 +19,16 @@ export function saveReportPreview({ activeCase = {}, preview = null, source = "l
   const existing = loadSavedReports();
   const nextReports = [report, ...existing.filter((item) => item.reportId !== report.reportId)].slice(0, MAX_REPORTS);
   saveState(SAVED_REPORTS_KEY, nextReports);
+  appendReportAction(report, "ReportSaved", `Saved ${report.title} to Report Center`);
   return report;
 }
 
 export function deleteSavedReport(reportId) {
-  const nextReports = loadSavedReports().filter((report) => report.reportId !== reportId);
+  const existing = loadSavedReports();
+  const removed = existing.find((report) => report.reportId === reportId) || null;
+  const nextReports = existing.filter((report) => report.reportId !== reportId);
   saveState(SAVED_REPORTS_KEY, nextReports);
+  if (removed) appendReportAction(removed, "ReportDeleted", `Deleted ${removed.title} from Report Center`);
   return nextReports;
 }
 
@@ -74,6 +81,34 @@ function buildReportRecord({ activeCase = {}, preview = {}, source = "lookup", s
     sections: normalizeSections(preview.sections),
     guardrail: REPORT_CENTER_GUARDRAIL
   };
+}
+
+function appendReportAction(report, actionType, outcome) {
+  if (!report?.caseId) return;
+
+  const currentLog = loadState(ACTION_LOG_KEY, {});
+  const caseActions = Array.isArray(currentLog[report.caseId]) ? currentLog[report.caseId] : [];
+  const action = {
+    actionId: `${report.caseId}-${Date.now()}-${actionType}`,
+    performedAt: new Date().toISOString(),
+    actionType,
+    outcome,
+    xpDelta: actionType === "ReportSaved" ? 3 : 0,
+    confidenceDelta: 0.01,
+    notes: REPORT_CENTER_GUARDRAIL,
+    metadata: {
+      reportId: report.reportId,
+      reportTitle: report.title,
+      source: report.source,
+      matchStatus: report.matchStatus,
+      query: report.query || ""
+    }
+  };
+
+  saveState(ACTION_LOG_KEY, {
+    ...currentLog,
+    [report.caseId]: [action, ...caseActions].slice(0, MAX_ACTIONS_PER_CASE)
+  });
 }
 
 function normalizeSections(sections = []) {
