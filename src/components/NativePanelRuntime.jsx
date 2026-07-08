@@ -3,6 +3,7 @@ import { createPortal } from "react-dom";
 import Customer360DossierPanel from "./Customer360DossierPanel.jsx";
 import DeterminationPanel from "./DeterminationPanel.jsx";
 import DocumentRequestWorkflowPanel from "./DocumentRequestWorkflowPanel.jsx";
+import LookupReportLauncherPanel from "./LookupReportLauncherPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
 import { loadState, saveState } from "../utils/storage.js";
@@ -96,6 +97,7 @@ export default function NativePanelRuntime() {
     ? createPortal(
         <div className="faNativeCustomer360Slot" aria-label="Customer 360 expanded dossier slot">
           <Customer360DossierPanel activeCase={snapshot.activeCase} />
+          <LookupReportLauncherPanel activeCase={snapshot.activeCase} />
         </div>,
         targets.pagePanel
       )
