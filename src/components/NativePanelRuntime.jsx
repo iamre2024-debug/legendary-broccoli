@@ -6,24 +6,26 @@ import DocumentRequestWorkflowPanel from "./DocumentRequestWorkflowPanel.jsx";
 import LookupReportLauncherPanel from "./LookupReportLauncherPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
 import SavedReportCenterPanel from "./SavedReportCenterPanel.jsx";
-import { toolNavByLane } from "../data/fraudAcademyEngine.js";
-import { loadState, saveState } from "../utils/storage.js";
-
-const STORE = "fa-v3-interactive-investigator";
-const key = (name) => `${STORE}:${name}`;
-const EMPTY_INDICATORS = { suspicious: [], normal: [] };
+import { saveState } from "../utils/storage.js";
+import {
+  appendAction,
+  buildActiveCaseState,
+  readWorkstationSnapshot,
+  workstationKey,
+  writeCaseMap as writeRuntimeCaseMap
+} from "../data/workstationRuntimeState.js";
 
 export default function NativePanelRuntime() {
-  const [snapshot, setSnapshot] = useState(() => readSnapshot());
+  const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
   const [targets, setTargets] = useState(() => findTargets());
 
-  const caseState = useMemo(() => buildCaseState(snapshot), [snapshot]);
+  const caseState = useMemo(() => buildActiveCaseState(snapshot), [snapshot]);
 
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
     const refresh = () => {
-      setSnapshot(readSnapshot());
+      setSnapshot(readWorkstationSnapshot());
       setTargets(findTargets());
     };
 
@@ -126,57 +128,9 @@ export default function NativePanelRuntime() {
   );
 }
 
-function readSnapshot() {
-  const cases = loadState(key("cases"), []);
-  const completed = loadState(key("completed"), []);
-  const activeCaseId = loadState(key("activeCaseId"), cases[0]?.id);
-  const activeCase = cases.find((item) => item.id === activeCaseId) || cases.find((item) => !completed.includes(item.id)) || cases[0] || null;
-
-  return {
-    cases,
-    completed,
-    activeCase,
-    page: loadState(key("page"), "dashboard"),
-    reviewedTools: loadState(key("reviewedTools"), {}),
-    indicators: loadState(key("indicatorChecks"), {}),
-    determinations: loadState(key("determinations"), {}),
-    justifications: loadState(key("justifications"), {}),
-    actionLog: loadState(key("actionLog"), {})
-  };
-}
-
-function buildCaseState(snapshot) {
-  const activeCase = snapshot.activeCase;
-  if (!activeCase) {
-    return {
-      reviewedTools: [],
-      indicators: EMPTY_INDICATORS,
-      actions: [],
-      determination: "",
-      justification: "",
-      progress: 0
-    };
-  }
-
-  const reviewedTools = snapshot.reviewedTools[activeCase.id] || [];
-  const indicators = snapshot.indicators[activeCase.id] || EMPTY_INDICATORS;
-  const determination = snapshot.determinations[activeCase.id] || "";
-
-  return {
-    reviewedTools,
-    indicators,
-    actions: snapshot.actionLog[activeCase.id] || [],
-    determination,
-    justification: snapshot.justifications[activeCase.id] || "",
-    progress: progressFor(activeCase, reviewedTools, indicators, determination)
-  };
-}
-
 function writeCaseMap(name, caseId, value, setSnapshot) {
-  const current = loadState(key(name), {});
-  saveState(key(name), { ...current, [caseId]: value });
-  notifyLocalRuntime();
-  setSnapshot(readSnapshot());
+  writeRuntimeCaseMap(name, caseId, value);
+  setSnapshot(readWorkstationSnapshot());
 }
 
 function completeCase(snapshot, determination, setSnapshot) {
@@ -184,7 +138,6 @@ function completeCase(snapshot, determination, setSnapshot) {
   if (!activeCase) return;
 
   const completed = Array.from(new Set([...(snapshot.completed || []), activeCase.id]));
-  const currentLog = loadState(key("actionLog"), {});
   const action = {
     actionId: `${activeCase.id}-${Date.now()}-SubmitDecision-native`,
     performedAt: new Date().toISOString(),
@@ -196,14 +149,10 @@ function completeCase(snapshot, determination, setSnapshot) {
     metadata: { determination }
   };
 
-  saveState(key("completed"), completed);
-  saveState(key("actionLog"), {
-    ...currentLog,
-    [activeCase.id]: [action, ...(currentLog[activeCase.id] || [])].slice(0, 24)
-  });
-  saveState(key("page"), "debrief");
-  notifyLocalRuntime();
-  setSnapshot(readSnapshot());
+  saveState(workstationKey("completed"), completed);
+  appendAction(activeCase.id, action);
+  saveState(workstationKey("page"), "debrief");
+  setSnapshot(readWorkstationSnapshot());
 
   if (typeof window !== "undefined") {
     window.setTimeout(() => window.location.reload(), 120);
@@ -217,17 +166,4 @@ function findTargets() {
     grid: document.querySelector(".faContentGrid"),
     pagePanel: document.querySelector(".faPagePanel")
   };
-}
-
-function notifyLocalRuntime() {
-  if (typeof window === "undefined") return;
-  window.dispatchEvent(new Event("storage"));
-}
-
-function progressFor(activeCase, reviewedTools = [], indicators = EMPTY_INDICATORS, determination = "") {
-  const laneTools = toolNavByLane[activeCase?.lane] || [];
-  const toolProgress = laneTools.length ? (reviewedTools.length / laneTools.length) * 55 : 0;
-  const indicatorProgress = ((indicators.suspicious?.length || 0) + (indicators.normal?.length || 0)) > 0 ? 20 : 0;
-  const determinationProgress = determination ? 25 : 0;
-  return Math.min(100, Math.round(toolProgress + indicatorProgress + determinationProgress));
 }
