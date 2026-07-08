@@ -48,7 +48,7 @@ export default function SavedReportCenterPanel({ activeCase }) {
           <span className="faEyebrow">Report Center</span>
           <h3>Saved report history</h3>
           <p>
-            Save lookup previews and reopen them from the investigation summary. Reports stay local, fictional, and evidence-only until Determination and Debrief.
+            Save lookup previews and reopen them here in Evidence Center. The Case Report Draft can reference saved reports later, but this panel stays evidence-only.
           </p>
         </div>
         <strong>▤</strong>
@@ -63,7 +63,7 @@ export default function SavedReportCenterPanel({ activeCase }) {
       {!reports.length && (
         <article className="faReportCenterEmpty">
           <strong>No reports saved yet</strong>
-          <p>Generate a Customer 360 lookup report preview, then save it here. Future tool report previews can use the same Report Center spine.</p>
+          <p>Save a report preview from a tool, then reopen it here. Report Center is the evidence library, not the final debrief.</p>
         </article>
       )}
 
