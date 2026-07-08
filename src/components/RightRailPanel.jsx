@@ -41,7 +41,11 @@ export default function RightRailPanel({
         <span className="faEyebrow">Action Impact</span>
         <h3>{actions.length}</h3>
         <p>events logged</p>
-        {actions.slice(0, 3).map((action) => <small key={action.actionId}>{action.actionType}: {action.xpDelta > 0 ? `+${action.xpDelta} XP` : "0 XP"}</small>)}
+        {actions.slice(0, 4).map((action) => (
+          <small key={action.actionId} title={action.outcome || action.notes || action.actionType}>
+            {formatActionLabel(action)}: {action.xpDelta > 0 ? `+${action.xpDelta} XP` : "0 XP"}
+          </small>
+        ))}
       </section>
       <section className="faRailCard">
         <span className="faEyebrow">Reviewed evidence</span>
@@ -60,4 +64,13 @@ export default function RightRailPanel({
       </section>
     </aside>
   );
+}
+
+function formatActionLabel(action = {}) {
+  if (action.actionType === "ReportSaved") return "Report saved";
+  if (action.actionType === "ReportDeleted") return "Report deleted";
+  if (action.actionType === "RequestDocs") return "Docs updated";
+  if (action.actionType === "SubmitDecision") return "Determination";
+  if (action.actionType === "MarkToolReviewed") return "Tool reviewed";
+  return action.actionType || "Action";
 }
