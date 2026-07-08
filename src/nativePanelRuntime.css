@@ -2,11 +2,17 @@ body.faNativeRailReady .faContentGrid > .faRightRail:not(.faNativeRightRail) {
   display: none;
 }
 
-body.faNativeDeterminationReady .faPagePanel > .faStack {
+body.faNativeDeterminationReady .faPagePanel > .faStack,
+body.faEvidenceDebriefReady .faPagePanel > .faStack {
   display: none;
 }
 
-.faNativeDeterminationSlot {
+body.faNativeDocumentWorkflowReady .faNativeRightRail .faDocumentRequestDock {
+  display: none;
+}
+
+.faNativeDeterminationSlot,
+.faEvidenceDebrief {
   min-width: 0;
   width: 100%;
 }
@@ -42,6 +48,11 @@ body.faNativeDeterminationReady .faPagePanel > .faStack {
 .faNativeDocumentWorkflowSlot {
   width: 100%;
   margin-top: 18px;
+}
+
+.faNativeDocumentWorkflowSlot {
+  display: grid;
+  gap: 18px;
 }
 
 .faCustomer360Dossier,
@@ -273,5 +284,17 @@ body.faNativeDeterminationReady .faPagePanel > .faStack {
 
   .faDocWorkflowHeader {
     flex-direction: column;
+  }
+}
+
+@media (max-width: 720px) {
+  .faNativeDocumentWorkflowSlot {
+    margin-top: 14px;
+  }
+
+  .faDocWorkflowControl select,
+  .faDocWorkflowControl button {
+    min-height: 48px;
+    font-size: 1rem;
   }
 }
