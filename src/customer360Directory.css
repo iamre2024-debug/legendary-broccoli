@@ -1,0 +1,163 @@
+.faCustomer360Directory {
+  margin-top: 18px;
+  border: 1px solid rgba(244, 114, 255, 0.26);
+  background:
+    radial-gradient(circle at top left, rgba(244, 114, 255, 0.12), transparent 36%),
+    radial-gradient(circle at bottom right, rgba(67, 230, 255, 0.10), transparent 38%),
+    rgba(18, 9, 40, 0.72);
+  box-shadow: 0 24px 70px rgba(107, 40, 217, 0.18);
+}
+
+.faDirectoryHeader {
+  display: grid;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.faDirectoryHeader h3,
+.faDirectorySectionTitle h4,
+.faDirectoryLookupShelf h4 {
+  margin: 0;
+}
+
+.faDirectoryHeader p {
+  margin: 0;
+  color: rgba(245, 238, 255, 0.72);
+  line-height: 1.5;
+}
+
+.faDirectoryGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.faDirectorySection {
+  border-radius: 24px;
+  border: 1px solid rgba(255, 255, 255, 0.11);
+  background: rgba(255, 255, 255, 0.045);
+  padding: 16px;
+}
+
+.faDirectorySectionTitle {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: end;
+  margin-bottom: 12px;
+}
+
+.faDirectoryCards {
+  display: grid;
+  gap: 12px;
+}
+
+.faDirectoryCard {
+  display: grid;
+  gap: 8px;
+  padding: 14px;
+  border-radius: 20px;
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  background: rgba(11, 7, 26, 0.54);
+}
+
+.faDirectoryCard strong {
+  color: #fff;
+}
+
+.faDirectoryCard p,
+.faDirectoryCard small {
+  margin: 0;
+  color: rgba(245, 238, 255, 0.72);
+}
+
+.faDirectoryFact {
+  display: grid;
+  grid-template-columns: minmax(100px, 0.45fr) 1fr;
+  gap: 10px;
+  align-items: start;
+  font-size: 0.86rem;
+}
+
+.faDirectoryFact span {
+  color: rgba(255, 189, 251, 0.78);
+}
+
+.faDirectoryFact strong {
+  color: rgba(255, 255, 255, 0.92);
+  font-weight: 650;
+}
+
+.faDirectoryStatus {
+  justify-self: start;
+  border-radius: 999px;
+  padding: 6px 10px;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(67, 230, 255, 0.13);
+  border: 1px solid rgba(67, 230, 255, 0.25);
+  font-size: 0.78rem;
+}
+
+.faDirectoryStatus.caution {
+  background: rgba(255, 191, 87, 0.14);
+  border-color: rgba(255, 191, 87, 0.35);
+}
+
+.faDirectoryLookupShelf {
+  margin-top: 16px;
+  display: grid;
+  gap: 12px;
+  border-radius: 24px;
+  padding: 16px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.10);
+}
+
+.faDirectoryPills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.faDirectoryPills span {
+  display: grid;
+  gap: 3px;
+  max-width: 280px;
+  border-radius: 18px;
+  padding: 10px 12px;
+  background: linear-gradient(135deg, rgba(244, 114, 255, 0.14), rgba(67, 230, 255, 0.08));
+  border: 1px solid rgba(255, 255, 255, 0.10);
+  color: rgba(255, 255, 255, 0.88);
+  font-size: 0.84rem;
+}
+
+.faDirectoryPills b {
+  color: #ffbdfb;
+}
+
+.faDirectoryPills small {
+  color: rgba(245, 238, 255, 0.62);
+}
+
+@media (max-width: 960px) {
+  .faDirectoryGrid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 620px) {
+  .faDirectoryFact {
+    grid-template-columns: 1fr;
+    gap: 2px;
+  }
+
+  .faDirectorySectionTitle {
+    align-items: start;
+    flex-direction: column;
+  }
+
+  .faDirectoryPills span {
+    max-width: 100%;
+    width: 100%;
+  }
+}
