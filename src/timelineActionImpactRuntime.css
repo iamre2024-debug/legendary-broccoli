@@ -1,0 +1,100 @@
+.faTimelineRuntime {
+  margin-top: 16px;
+  border-color: rgba(141, 232, 255, 0.25);
+}
+
+.faTimelineRuntimeHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  align-items: flex-start;
+}
+
+.faTimelineRuntimeHeader h3,
+.faTimelineRuntimeHeader p {
+  margin: 0;
+}
+
+.faTimelineRuntimeHeader h3 {
+  margin-top: 4px;
+}
+
+.faTimelineRuntimeHeader p,
+.faTimelineRuntimeGuardrail {
+  color: rgba(244, 235, 255, 0.72);
+}
+
+.faTimelineRuntimeHeader > strong {
+  min-width: 52px;
+  min-height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 20px;
+  color: #fff;
+  background: rgba(141, 232, 255, 0.1);
+  border: 1px solid rgba(141, 232, 255, 0.22);
+}
+
+.faTimelineRuntimeGrid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 14px;
+}
+
+.faTimelineRuntimeColumn,
+.faTimelineRuntimeAction {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.045);
+  padding: 12px;
+}
+
+.faTimelineRuntimeAction {
+  margin-top: 10px;
+}
+
+.faTimelineRuntimeAction[data-action="ReportSaved"] {
+  border-color: rgba(100, 255, 198, 0.28);
+}
+
+.faTimelineRuntimeAction[data-action="ReportDeleted"] {
+  border-color: rgba(255, 130, 180, 0.24);
+}
+
+.faTimelineRuntimeAction[data-action="RequestDocs"] {
+  border-color: rgba(255, 210, 130, 0.28);
+}
+
+.faTimelineRuntimeAction > div {
+  display: flex;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.faTimelineRuntimeAction p {
+  margin: 8px 0;
+  color: rgba(244, 235, 255, 0.78);
+}
+
+.faTimelineRuntimeAction span,
+.faTimelineRuntimeAction small {
+  color: rgba(244, 235, 255, 0.62);
+}
+
+.faTimelineRuntimeGuardrail {
+  border-left: 3px solid rgba(141, 232, 255, 0.48);
+  padding-left: 12px;
+  margin-bottom: 0;
+}
+
+@media (max-width: 820px) {
+  .faTimelineRuntimeHeader,
+  .faTimelineRuntimeAction > div {
+    flex-direction: column;
+  }
+
+  .faTimelineRuntimeGrid {
+    grid-template-columns: 1fr;
+  }
+}
