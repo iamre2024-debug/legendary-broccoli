@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
-import { REPORT_CENTER_GUARDRAIL } from "../data/savedReportCenter.js";
+import { REPORT_CENTER_GUARDRAIL, REPORT_CENTER_UPDATED_EVENT } from "../data/savedReportCenter.js";
 import { loadState } from "../utils/storage.js";
 
 const STORE = "fa-v3-interactive-investigator";
 const key = (name) => `${STORE}:${name}`;
-const LIVE_EVENT = "fa-report-center-updated";
 
 export default function TimelineActionImpactRuntime() {
   const [snapshot, setSnapshot] = useState(() => readSnapshot());
@@ -33,13 +32,13 @@ export default function TimelineActionImpactRuntime() {
     const interval = window.setInterval(refresh, 700);
     window.addEventListener("click", refresh, true);
     window.addEventListener("storage", refresh);
-    window.addEventListener(LIVE_EVENT, refresh);
+    window.addEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
 
     return () => {
       window.clearInterval(interval);
       window.removeEventListener("click", refresh, true);
       window.removeEventListener("storage", refresh);
-      window.removeEventListener(LIVE_EVENT, refresh);
+      window.removeEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
     };
   }, []);
 
