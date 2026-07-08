@@ -19,6 +19,7 @@ export default function RightRailPanel({
 
   const toolDefinition = toolPageIds.has(page) ? resolveToolDefinition(page) : null;
   const isCompleted = completed.includes(activeCase.id);
+  const showDocumentRequestDock = page !== "summary";
 
   return (
     <aside className="faRightRail faNativeRightRail">
@@ -29,7 +30,7 @@ export default function RightRailPanel({
         <small>{activeCase.subtype}</small>
       </section>
       <CreditRailMini activeCase={activeCase} />
-      <DocumentRequestDock activeCase={activeCase} />
+      {showDocumentRequestDock && <DocumentRequestDock activeCase={activeCase} />}
       {toolDefinition && (
         <section className="faRailCard">
           <span className="faEyebrow">Evidence Explorer</span>
