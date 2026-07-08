@@ -1,16 +1,18 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import { REPORT_CENTER_GUARDRAIL, REPORT_CENTER_UPDATED_EVENT } from "../data/savedReportCenter.js";
-import { readWorkstationSnapshot, WORKSTATION_STORAGE_EVENT } from "../data/workstationRuntimeState.js";
+import { WORKSTATION_STORAGE_EVENT } from "../data/workstationRuntimeState.js";
 import { useNativePortalTargets } from "../hooks/useNativePortalTargets.js";
+import { useWorkstationSnapshot } from "../hooks/useWorkstationSnapshot.js";
 
 const TIMELINE_PORTAL_SELECTORS = {
   pageStack: [".faPagePanel .faStack", ".faPagePanel"]
 };
 const TIMELINE_TARGET_EVENTS = [REPORT_CENTER_UPDATED_EVENT, WORKSTATION_STORAGE_EVENT];
+const TIMELINE_SNAPSHOT_EVENTS = [REPORT_CENTER_UPDATED_EVENT];
 
 export default function TimelineActionImpactRuntime() {
-  const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
+  const { snapshot } = useWorkstationSnapshot({ intervalMs: 700, events: TIMELINE_SNAPSHOT_EVENTS });
   const targets = useNativePortalTargets({ selectors: TIMELINE_PORTAL_SELECTORS, intervalMs: 700, events: TIMELINE_TARGET_EVENTS });
   const target = targets.pageStack;
 
@@ -23,27 +25,6 @@ export default function TimelineActionImpactRuntime() {
   const shouldShow = Boolean(target && snapshot.page === "timeline" && snapshot.activeCase);
   const reportActions = actions.filter((action) => ["ReportSaved", "ReportDeleted", "RequestDocs"].includes(action.actionType));
   const otherActions = actions.filter((action) => !["ReportSaved", "ReportDeleted", "RequestDocs"].includes(action.actionType));
-
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const refresh = () => setSnapshot(readWorkstationSnapshot());
-
-    refresh();
-    const interval = window.setInterval(refresh, 700);
-    window.addEventListener("click", refresh, true);
-    window.addEventListener("storage", refresh);
-    window.addEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
-    window.addEventListener(WORKSTATION_STORAGE_EVENT, refresh);
-
-    return () => {
-      window.clearInterval(interval);
-      window.removeEventListener("click", refresh, true);
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener(REPORT_CENTER_UPDATED_EVENT, refresh);
-      window.removeEventListener(WORKSTATION_STORAGE_EVENT, refresh);
-    };
-  }, []);
 
   if (!shouldShow) return null;
 
