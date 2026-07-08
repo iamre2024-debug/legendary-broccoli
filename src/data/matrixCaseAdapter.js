@@ -1,6 +1,7 @@
 import { CLAIM_FAMILIES, generateCase as generateLegacyCase, toolNavByLane } from "./fraudAcademyEngine";
 import { buildCustomerProfileSpine, profileRowsForTool } from "./customerProfileSpine";
 import { fullHistoryRowsForTool } from "./customerToolHistory";
+import { toolIoRowsForTool } from "./toolIoContracts";
 import { buildScenarioProvenance, getScenarioForLane, MATRIX_SCENARIO_VERSION } from "./matrixScenarioRegistry";
 import { resolveToolDefinition } from "./toolRegistry";
 
@@ -83,12 +84,14 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, c
     const baseTimeline = Array.isArray(currentTool.timeline) ? currentTool.timeline : [];
     const scenarioDocs = flattenDocuments(scenario.documents);
     const profileRows = fullHistoryRowsForTool(toolId, customerProfile, profileRowsForTool(toolId, customerProfile));
+    const ioRows = toolIoRowsForTool(toolId);
 
     enrichedTools[toolId] = {
       ...currentTool,
       title: currentTool.title || definition.title,
       summary: `${currentTool.summary || definition.evidenceRole} Matrix context: ${scenario.plainEnglishMeaning}`,
       rows: [
+        ...ioRows,
         ...baseRows,
         ...profileRows,
         row("Scenario source", `${scenario.scenarioId} · ${scenario.difficulty}`, "neutral"),
@@ -101,18 +104,24 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, c
         ...(currentTool.riskSignals || []),
         `Needs review: ${definition.title} evidence should be compared against the ${scenario.claimFamily} story.`,
         `Customer 360 comparison: ${customerProfile.customerId} baseline, profile changes, login sessions, and lookup keys should be used as context only.`,
+        `Input/output check: ${definition.title} should use its expected input and produce its expected output without revealing the final determination.`,
         `Evidence gap check: ${firstOrFallback(scenario.expectedEvidence, "lane-specific evidence")} must be documented before determination.`,
         `Sequence check: ${(scenario.timelinePattern || []).slice(0, 3).join(" → ") || "timeline not provided"}.`
       ]),
       relatedDocuments: uniqueList([...(currentTool.relatedDocuments || []), ...scenarioDocs, ...profileDocumentNames(customerProfile), `${definition.title} Report`, "Case timeline", "Investigation summary"]),
       nextActions: uniqueList([
         ...(currentTool.nextActions || []),
+        `Confirm the ${definition.title} input matches the active lane and Customer 360 profile before relying on the output.`,
         `Search ${definition.title} for repeated values, first-seen records, timing gaps, or ownership mismatches.`,
         "Compare the result with Customer 360 baseline and any related report sections.",
         "Write the open question in Investigation Summary before moving to indicators."
       ]),
       reportTitle: currentTool.reportTitle || `${definition.title} · ${scenario.claimFamily} Report`,
       reportSections: currentTool.reportSections || [
+        {
+          title: "Tool input / output contract",
+          items: ioRows.map((item) => `${item.k}: ${item.v}`)
+        },
         {
           title: "Matrix scenario context",
           items: [scenario.plainEnglishMeaning, scenario.howItHappens, `Scenario ID: ${scenario.scenarioId}`]
