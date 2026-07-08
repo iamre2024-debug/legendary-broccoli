@@ -57,15 +57,17 @@ export default function DocumentRequestDock({ activeCase }) {
             </div>
             <span>{row.status}</span>
             <em>{row.due}</em>
-            <label className="faDocumentRequestNote">
+            <div className="faDocumentRequestNote">
               <small>Investigator note</small>
               <textarea
                 value={requestNotes[row.id] || ""}
                 onChange={(event) => updateNote(row.id, event.target.value)}
-                placeholder="Add why this document is needed before logging the request..."
+                placeholder="Type the note, then submit it to the case..."
               />
-            </label>
-            <button className="faDocumentRequestSubmit" type="button" onClick={() => logRequest(row)}>{loggedRequests[row.id] ? "Submitted ✓" : "Submit note"}</button>
+              <button className="faDocumentRequestSubmit" type="button" onClick={() => logRequest(row)}>
+                {loggedRequests[row.id] ? "Submitted note ✓" : "Submit note to case"}
+              </button>
+            </div>
           </article>
         ))}
       </div>
