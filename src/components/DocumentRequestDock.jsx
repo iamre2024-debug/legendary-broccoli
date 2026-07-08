@@ -65,7 +65,7 @@ export default function DocumentRequestDock({ activeCase }) {
                 placeholder="Add why this document is needed before logging the request..."
               />
             </label>
-            <button type="button" onClick={() => logRequest(row)}>{loggedRequests[row.id] ? "Logged ✓" : "Log request"}</button>
+            <button className="faDocumentRequestSubmit" type="button" onClick={() => logRequest(row)}>{loggedRequests[row.id] ? "Submitted ✓" : "Submit note"}</button>
           </article>
         ))}
       </div>
