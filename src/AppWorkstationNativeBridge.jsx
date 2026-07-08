@@ -5,6 +5,7 @@ import Customer360DirectoryRuntime from "./components/Customer360DirectoryRuntim
 import ToolReportSaveRuntime from "./components/ToolReportSaveRuntime.jsx";
 import SavedReportCenterRuntime from "./components/SavedReportCenterRuntime.jsx";
 import TimelineActionImpactRuntime from "./components/TimelineActionImpactRuntime.jsx";
+import CaseReportBuilderRuntime from "./components/CaseReportBuilderRuntime.jsx";
 import "./nativePanelRuntime.css";
 import "./lookupReportLauncher.css";
 import "./reportCenter.css";
@@ -13,6 +14,7 @@ import "./mobileNativePolish.css";
 import "./toolReportSaveDock.css";
 import "./timelineActionImpactRuntime.css";
 import "./documentRequestNotes.css";
+import "./caseReportBuilder.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
@@ -24,6 +26,7 @@ export default function AppWorkstationNativeBridge() {
       <ToolReportSaveRuntime />
       <SavedReportCenterRuntime />
       <TimelineActionImpactRuntime />
+      <CaseReportBuilderRuntime />
     </>
   );
 }
