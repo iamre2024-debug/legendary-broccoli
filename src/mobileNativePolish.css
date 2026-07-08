@@ -1,0 +1,236 @@
+/* Mobile approval polish for native Fraud Academy panels. */
+
+.faNativeRightRail {
+  gap: 14px;
+}
+
+.faNativeRightRail .faRailCard,
+.faNativeRightRail .faDocumentRequestDock,
+.faNativeRightRail .faCreditRailMini,
+.faNativeDocumentWorkflowSlot > *,
+.faNativeCustomer360Slot > * {
+  min-width: 0;
+}
+
+.faDocumentRequestDock {
+  border: 1px solid rgba(141, 232, 255, 0.22);
+  border-radius: 24px;
+  padding: 16px;
+  background: linear-gradient(145deg, rgba(31, 18, 68, 0.88), rgba(12, 10, 30, 0.76));
+}
+
+.faDocumentRequestHeader {
+  display: grid;
+  gap: 5px;
+  margin-bottom: 14px;
+}
+
+.faDocumentRequestHeader .faEyebrow {
+  display: block;
+  width: fit-content;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.faDocumentRequestHeader strong {
+  display: block;
+  font-size: 1.05rem;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.faDocumentRequestHeader small,
+.faDocumentRequestRow small,
+.faDocumentRequestDock p {
+  display: block;
+  color: rgba(244, 235, 255, 0.72);
+  line-height: 1.45;
+}
+
+.faDocumentRequestRows {
+  display: grid;
+  gap: 10px;
+}
+
+.faDocumentRequestRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 8px 12px;
+  align-items: start;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.faDocumentRequestRow > div {
+  min-width: 0;
+}
+
+.faDocumentRequestRow strong {
+  display: block;
+  margin-bottom: 5px;
+  word-break: break-word;
+}
+
+.faDocumentRequestRow span,
+.faDocumentRequestRow em {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 9px;
+  font-size: 0.78rem;
+  line-height: 1.2;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+  font-style: normal;
+}
+
+.faDocumentRequestRow em {
+  grid-column: 1 / -1;
+  color: rgba(244, 235, 255, 0.66);
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.faDocumentRequestDock > p {
+  margin: 14px 0 0;
+}
+
+.faNativeDocumentWorkflowSlot {
+  display: grid;
+  gap: 18px;
+}
+
+.faDocumentWorkflow,
+.faSavedReportCenter,
+.faCustomer360Dossier,
+.faLookupReportLauncher {
+  overflow: hidden;
+}
+
+.faDocWorkflowHeader,
+.faReportCenterHeader,
+.faReportCenterPreviewTop {
+  min-width: 0;
+}
+
+.faDocWorkflowHeader > div,
+.faReportCenterHeader > div,
+.faReportCenterPreviewTop > div {
+  min-width: 0;
+}
+
+@media (max-width: 1180px) {
+  .faNativeRightRail {
+    position: static;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+
+  .faNativeRightRail .faDocumentRequestDock,
+  .faNativeRightRail .faCreditRailMini {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 720px) {
+  .faContentGrid {
+    gap: 18px;
+  }
+
+  .faNativeRightRail {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .faNativeRightRail .faRailCard,
+  .faNativeRightRail .faDocumentRequestDock,
+  .faNativeRightRail .faCreditRailMini,
+  .faDocumentWorkflow,
+  .faSavedReportCenter,
+  .faCustomer360Dossier,
+  .faLookupReportLauncher {
+    border-radius: 22px;
+    padding: 14px;
+  }
+
+  .faDocumentRequestHeader {
+    gap: 6px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .faDocumentRequestHeader strong,
+  .faDocWorkflowHeader h3,
+  .faReportCenterHeader h3,
+  .faReportCenterPreviewTop h4 {
+    font-size: 1.05rem;
+    line-height: 1.22;
+    margin-top: 3px;
+  }
+
+  .faDocumentRequestRow {
+    grid-template-columns: 1fr;
+  }
+
+  .faDocumentRequestRow span,
+  .faDocumentRequestRow em {
+    justify-self: start;
+  }
+
+  .faDocWorkflowStats,
+  .faReportCenterStats {
+    gap: 10px;
+  }
+
+  .faDocWorkflowRow,
+  .faSavedReportCard,
+  .faReportCenterPreview,
+  .faReportSourceSummary,
+  .faReportCenterSections section {
+    border-radius: 18px;
+  }
+
+  .faDocWorkflowRow {
+    gap: 12px;
+    align-items: stretch;
+  }
+
+  .faDocWorkflowControl {
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+    padding-top: 10px;
+  }
+
+  .faDocWorkflowMeta {
+    display: grid;
+    gap: 6px;
+  }
+
+  .faDocWorkflowMeta small,
+  .faDocWorkflowMeta em {
+    overflow-wrap: anywhere;
+  }
+}
+
+@media (max-width: 420px) {
+  .faNativeRightRail .faRailCard h3 {
+    font-size: 1.55rem;
+  }
+
+  .faDocumentRequestDock,
+  .faDocumentWorkflow,
+  .faSavedReportCenter,
+  .faCustomer360Dossier,
+  .faLookupReportLauncher {
+    padding: 12px;
+  }
+
+  .faDocWorkflowHeader > strong,
+  .faReportCenterHeader > strong {
+    min-width: 46px;
+    width: 46px;
+    height: 46px;
+    border-radius: 18px;
+  }
+}
