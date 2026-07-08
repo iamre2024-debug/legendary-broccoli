@@ -5,10 +5,12 @@ import {
   buildLookupReportPreview,
   runLookupReportSearch
 } from "../data/lookupReportEngine.js";
+import { saveReportPreview } from "../data/savedReportCenter.js";
 
 export default function LookupReportLauncherPanel({ activeCase }) {
   const [query, setQuery] = useState("");
   const [selectedId, setSelectedId] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
   const lookupIndex = useMemo(() => buildLookupIndex(activeCase), [activeCase]);
   const search = useMemo(() => runLookupReportSearch(activeCase, query), [activeCase, query]);
   const selectedRecord = search.results.find((record) => record.id === selectedId) || null;
@@ -17,6 +19,27 @@ export default function LookupReportLauncherPanel({ activeCase }) {
   function runExample(example) {
     setQuery(example);
     setSelectedId("");
+    setSaveMessage("");
+  }
+
+  function updateQuery(value) {
+    setQuery(value);
+    setSelectedId("");
+    setSaveMessage("");
+  }
+
+  function savePreview() {
+    const saved = saveReportPreview({
+      activeCase,
+      preview,
+      source: "customer360-lookup",
+      sourceRecord: selectedRecord,
+      query
+    });
+
+    if (!saved) return;
+    setSaveMessage(`Saved to Report Center · ${formatSavedAt(saved.savedAt)}`);
+    if (typeof window !== "undefined") window.dispatchEvent(new Event("storage"));
   }
 
   return (
@@ -37,10 +60,7 @@ export default function LookupReportLauncherPanel({ activeCase }) {
           <span>Lookup value</span>
           <input
             value={query}
-            onChange={(event) => {
-              setQuery(event.target.value);
-              setSelectedId("");
-            }}
+            onChange={(event) => updateQuery(event.target.value)}
             placeholder="Search fictional SSN/EIN + DOB, bank key, employee ID, device ID, IP..."
           />
         </label>
@@ -77,7 +97,7 @@ export default function LookupReportLauncherPanel({ activeCase }) {
               </div>
               <div className="faLookupResultActions">
                 <em data-tone={record.match.tone}>{record.match.status}</em>
-                <button type="button" onClick={() => setSelectedId(record.id)}>
+                <button type="button" onClick={() => { setSelectedId(record.id); setSaveMessage(""); }}>
                   Generate report preview
                 </button>
               </div>
@@ -94,7 +114,10 @@ export default function LookupReportLauncherPanel({ activeCase }) {
               <h4>{preview.title}</h4>
               <p>{preview.subtitle}</p>
             </div>
-            <strong>{preview.matchStatus}</strong>
+            <div className="faLookupPreviewActions">
+              <strong>{preview.matchStatus}</strong>
+              <button type="button" onClick={savePreview}>Save to Report Center</button>
+            </div>
           </div>
           <div className="faLookupReportSections">
             {preview.sections.map((section) => (
@@ -106,10 +129,17 @@ export default function LookupReportLauncherPanel({ activeCase }) {
               </section>
             ))}
           </div>
+          {saveMessage && <p className="faLookupSaveStatus">{saveMessage}</p>}
         </article>
       )}
 
       <p className="faLookupGuardrail">{LOOKUP_REPORT_GUARDRAIL}</p>
     </section>
   );
+}
+
+function formatSavedAt(value) {
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "saved locally";
+  return date.toLocaleString([], { month: "short", day: "numeric", hour: "2-digit", minute: "2-digit" });
 }
