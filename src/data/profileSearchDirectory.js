@@ -69,10 +69,14 @@ function buildBankAccounts(profile, lane, employeeDirectory = []) {
     bankName: "Fictional National Bank",
     routingMasked: "0310****9",
     accountMasked: "****7712",
+    trainingRoutingNumber: "TRAINING-RT-031000009",
+    trainingAccountNumber: "TRAINING-ACCT-00007712",
     accountType: "Checking",
     firstSeen: "2025-01-10",
     priorUse: "18 successful payroll cycles",
     ownershipMatch: "Matches employee profile",
+    matchStatus: "Match",
+    verificationReason: "Prior payroll destination tied to the trusted employee directory record.",
     recoverability: "Normal payroll reversal path if not released",
     status: "Known prior account"
   };
@@ -84,10 +88,14 @@ function buildBankAccounts(profile, lane, employeeDirectory = []) {
     bankName: lane === "BEC" ? "Fictional Fintech Bank" : "Fictional Prepaid Program Bank",
     routingMasked: "1210****4",
     accountMasked: "****8839",
+    trainingRoutingNumber: "TRAINING-RT-121000004",
+    trainingAccountNumber: "TRAINING-ACCT-00008839",
     accountType: lane === "BEC" ? "Business checking claimed" : "Prepaid payroll card",
     firstSeen: "2026-07-15",
     priorUse: "No prior use in this customer profile",
     ownershipMatch: "Needs verification",
+    matchStatus: "Partial Match",
+    verificationReason: "Destination account exists in the fictional directory, but trusted ownership verification is still open.",
     recoverability: "Limited if funds are released",
     status: "First-seen destination"
   };
@@ -99,10 +107,14 @@ function buildBankAccounts(profile, lane, employeeDirectory = []) {
     bankName: "Fictional Treasury Bank",
     routingMasked: "1110****2",
     accountMasked: "****4201",
+    trainingRoutingNumber: "TRAINING-RT-111000002",
+    trainingAccountNumber: "TRAINING-ACCT-00004201",
     accountType: "Business checking / funding",
     firstSeen: "2021-04-14",
     priorUse: "Normal deposits, ACH, card settlement, or payroll funding",
     ownershipMatch: accountStanding,
+    matchStatus: accountStanding.includes("Good") ? "Match" : "Partial Match",
+    verificationReason: "Funding account belongs to the active Customer 360 profile; lane tools still decide relevance.",
     recoverability: "Depends on payment rail and release state",
     status: "Customer 360 funding account"
   };
@@ -115,6 +127,7 @@ function buildSearchableEntities(profile, employeeDirectory, bankAccounts, lane)
   const customerEntities = [
     entity("Customer ID", profile.customerId, "Open Customer 360 and lane tools."),
     entity("Masked ID", profile.maskedId || keys.maskedId, "Run Identity/Profile Verify search."),
+    entity("Training SSN/EIN + DOB", [keys.trainingFullSsnOrEin, keys.dob].filter(Boolean).join(" · "), "Generate fictional background lookup report."),
     entity("Phone", keys.phone || profile.phone, "Run Phone Verification or trusted callback comparison."),
     entity("Email", keys.email || profile.email, "Run Email Verification or sender/domain comparison."),
     entity("Device ID", keys.caseDeviceId, "Run Device Intelligence and Link Analysis."),
@@ -128,7 +141,10 @@ function buildSearchableEntities(profile, employeeDirectory, bankAccounts, lane)
     entity("Requested bank account", employee.requestedBankAccountId, "Open Bank Verification and Link Analysis.")
   ]);
 
-  const bankEntities = bankAccounts.map((account) => entity("Bank account", account.bankAccountId, `${account.bankName} · ${account.accountMasked} · ${account.status}`));
+  const bankEntities = bankAccounts.flatMap((account) => [
+    entity("Bank account", account.bankAccountId, `${account.bankName} · ${account.accountMasked} · ${account.status}`),
+    entity("Training routing/account", [account.trainingRoutingNumber, account.trainingAccountNumber].filter(Boolean).join(" · "), `${account.matchStatus || "Review"} · ${account.verificationReason || account.ownershipMatch}`)
+  ]);
 
   return [...customerEntities, ...employeeEntities, ...bankEntities].filter((item) => item.value);
 }
