@@ -2,6 +2,7 @@ import { loadState, saveState } from "../utils/storage.js";
 
 export const SAVED_REPORTS_KEY = "fa-v3-interactive-investigator:savedReports";
 export const REPORT_CENTER_GUARDRAIL = "Saved reports are fictional training artifacts. They preserve evidence context and lookup/report previews, but they do not reveal or decide the case outcome.";
+export const REPORT_CENTER_UPDATED_EVENT = "fa-report-center-updated";
 
 const ACTION_LOG_KEY = "fa-v3-interactive-investigator:actionLog";
 const MAX_REPORTS = 80;
@@ -20,6 +21,7 @@ export function saveReportPreview({ activeCase = {}, preview = null, source = "l
   const nextReports = [report, ...existing.filter((item) => item.reportId !== report.reportId)].slice(0, MAX_REPORTS);
   saveState(SAVED_REPORTS_KEY, nextReports);
   appendReportAction(report, "ReportSaved", `Saved ${report.title} to Report Center`);
+  notifyReportCenterRuntime();
   return report;
 }
 
@@ -29,6 +31,7 @@ export function deleteSavedReport(reportId) {
   const nextReports = existing.filter((report) => report.reportId !== reportId);
   saveState(SAVED_REPORTS_KEY, nextReports);
   if (removed) appendReportAction(removed, "ReportDeleted", `Deleted ${removed.title} from Report Center`);
+  notifyReportCenterRuntime();
   return nextReports;
 }
 
@@ -109,6 +112,12 @@ function appendReportAction(report, actionType, outcome) {
     ...currentLog,
     [report.caseId]: [action, ...caseActions].slice(0, MAX_ACTIONS_PER_CASE)
   });
+}
+
+function notifyReportCenterRuntime() {
+  if (typeof window === "undefined") return;
+  window.dispatchEvent(new Event("storage"));
+  window.dispatchEvent(new CustomEvent(REPORT_CENTER_UPDATED_EVENT));
 }
 
 function normalizeSections(sections = []) {
