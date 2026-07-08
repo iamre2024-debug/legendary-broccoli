@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import {
   DOCUMENT_REQUEST_STATUSES,
   buildDocumentRequestWorkflow,
@@ -12,6 +12,10 @@ const key = (name) => `${STORE}:${name}`;
 
 export default function DocumentRequestWorkflowPanel({ activeCase }) {
   const [statusMap, setStatusMap] = useState(() => readStatusMap(activeCase?.id));
+
+  useEffect(() => {
+    setStatusMap(readStatusMap(activeCase?.id));
+  }, [activeCase?.id]);
 
   const rows = useMemo(() => {
     return buildDocumentRequestWorkflow(activeCase).map((row) => ({
