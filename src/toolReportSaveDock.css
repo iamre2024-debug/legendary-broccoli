@@ -1,0 +1,24 @@
+.faToolReportSaveDock {
+  margin-top: 14px;
+  display: grid;
+  gap: 12px;
+  align-items: center;
+  border: 1px solid rgba(141, 232, 255, 0.28);
+  border-radius: 20px;
+  padding: 14px;
+}
+
+.faToolReportSaveDock h4,
+.faToolReportSaveDock p {
+  margin: 0;
+}
+
+.faToolReportSaveDock button {
+  border-radius: 999px;
+  padding: 10px 13px;
+  cursor: pointer;
+}
+
+.faToolReportSaveDock small {
+  color: #b9ffea;
+}
