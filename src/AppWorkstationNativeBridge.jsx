@@ -9,6 +9,7 @@ import "./lookupReportLauncher.css";
 import "./reportCenter.css";
 import "./customer360Directory.css";
 import "./mobileNativePolish.css";
+import "./toolReportSaveDock.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
