@@ -1,0 +1,82 @@
+.faEvidenceDebrief {
+  margin-top: 18px;
+  border: 1px solid rgba(141, 232, 255, 0.26);
+  border-radius: 24px;
+  padding: 16px;
+}
+
+.faEvidenceDebriefHeader {
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: flex-start;
+}
+
+.faEvidenceDebriefHeader h3,
+.faEvidenceDebriefHeader p {
+  margin: 0;
+}
+
+.faEvidenceDebriefHeader > strong {
+  border-radius: 20px;
+  padding: 12px 14px;
+  background: rgba(255, 255, 255, 0.07);
+}
+
+.faEvidenceDebriefStats,
+.faEvidenceDebriefGrid {
+  display: grid;
+  gap: 12px;
+}
+
+.faEvidenceDebriefStats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 16px 0;
+}
+
+.faEvidenceDebriefStats span,
+.faEvidenceDebriefSection {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.faEvidenceDebriefStats b {
+  display: block;
+  color: #fff;
+  font-size: 1.18rem;
+}
+
+.faEvidenceDebriefGrid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.faEvidenceDebriefSection h4 {
+  margin: 0 0 8px;
+}
+
+.faEvidenceDebriefSection ul {
+  margin: 0;
+  padding-left: 18px;
+}
+
+.faEvidenceDebriefSection li + li {
+  margin-top: 6px;
+}
+
+.faEvidenceDebriefGuardrail {
+  margin: 12px 0 0;
+  color: rgba(244, 235, 255, 0.72);
+}
+
+@media (max-width: 820px) {
+  .faEvidenceDebriefHeader {
+    flex-direction: column;
+  }
+
+  .faEvidenceDebriefStats,
+  .faEvidenceDebriefGrid {
+    grid-template-columns: 1fr;
+  }
+}
