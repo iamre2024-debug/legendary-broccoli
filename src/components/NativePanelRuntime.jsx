@@ -5,7 +5,6 @@ import DeterminationPanel from "./DeterminationPanel.jsx";
 import DocumentRequestWorkflowPanel from "./DocumentRequestWorkflowPanel.jsx";
 import LookupReportLauncherPanel from "./LookupReportLauncherPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
-import SavedReportCenterPanel from "./SavedReportCenterPanel.jsx";
 import { saveState } from "../utils/storage.js";
 import { useNativeBodyClasses, useNativePortalTargets } from "../hooks/useNativePortalTargets.js";
 import { useWorkstationSnapshot } from "../hooks/useWorkstationSnapshot.js";
@@ -25,8 +24,7 @@ export default function NativePanelRuntime() {
     faNativeRailReady: Boolean(targets.grid && snapshot.activeCase),
     faNativeDeterminationReady: Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase),
     faNativeCustomer360Ready: Boolean(targets.pagePanel && snapshot.page === "customer360" && snapshot.activeCase),
-    faNativeDocumentWorkflowReady: Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase),
-    faNativeReportCenterReady: Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase)
+    faNativeDocumentWorkflowReady: Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase)
   }), [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
   useNativeBodyClasses(nativeClassMap);
@@ -77,9 +75,8 @@ export default function NativePanelRuntime() {
 
   const documentWorkflow = targets.pagePanel && snapshot.page === "summary"
     ? createPortal(
-        <div className="faNativeDocumentWorkflowSlot" aria-label="Document request workflow and Report Center slot">
+        <div className="faNativeDocumentWorkflowSlot" aria-label="Document request workflow slot">
           <DocumentRequestWorkflowPanel activeCase={snapshot.activeCase} />
-          <SavedReportCenterPanel activeCase={snapshot.activeCase} />
         </div>,
         targets.pagePanel
       )
