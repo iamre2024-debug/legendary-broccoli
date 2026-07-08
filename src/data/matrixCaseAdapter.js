@@ -1,6 +1,7 @@
 import { CLAIM_FAMILIES, generateCase as generateLegacyCase, toolNavByLane } from "./fraudAcademyEngine";
 import { buildCustomerProfileSpine, profileRowsForTool } from "./customerProfileSpine";
 import { fullHistoryRowsForTool } from "./customerToolHistory";
+import { attachProfileSearchDirectory } from "./profileSearchDirectory";
 import { toolIoRowsForTool } from "./toolIoContracts";
 import { buildScenarioProvenance, getScenarioForLane, MATRIX_SCENARIO_VERSION } from "./matrixScenarioRegistry";
 import { resolveToolDefinition } from "./toolRegistry";
@@ -10,7 +11,7 @@ const TRAINING_GUARDRAIL = "Final determination and senior reasoning stay hidden
 export function generateMatrixCase(lane = "RANDOM", seed = Date.now()) {
   const scenario = getScenarioForLane(lane, seed);
   const baseCase = generateLegacyCase(scenario.lane);
-  const customerProfile = buildCustomerProfileSpine(scenario, baseCase);
+  const customerProfile = attachProfileSearchDirectory(buildCustomerProfileSpine(scenario, baseCase), scenario);
   const toolkitTools = uniqueList(scenario.toolkitTools || []);
   const suggestedTools = toolkitTools.map((toolId) => toolLabelFor(scenario.lane, toolId));
   const provenance = buildScenarioProvenance(scenario);
@@ -62,6 +63,8 @@ export function validateMatrixCaseAdapter(lane = "ATO") {
   if (!sample.suggestedTools?.length) missing.push("suggestedTools:empty");
   if (!sample.profile?.lookupKeys?.trainingFullSsnOrEin) missing.push("profile.lookupKeys:missing");
   if (!sample.profile?.loginSessions?.length) missing.push("profile.loginSessions:empty");
+  if (["PAYROLL", "BEC", "BUSINESS_BUSTOUT"].includes(sample.lane) && !sample.profile?.employeeDirectory?.length) missing.push("profile.employeeDirectory:empty");
+  if (!sample.profile?.bankAccounts?.length) missing.push("profile.bankAccounts:empty");
 
   return {
     version: MATRIX_SCENARIO_VERSION,
@@ -105,6 +108,7 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, c
         `Needs review: ${definition.title} evidence should be compared against the ${scenario.claimFamily} story.`,
         `Customer 360 comparison: ${customerProfile.customerId} baseline, profile changes, login sessions, and lookup keys should be used as context only.`,
         `Input/output check: ${definition.title} should use its expected input and produce its expected output without revealing the final determination.`,
+        `Search directory check: use employee, bank, device, IP, or identity keys only when they belong to this fictional profile packet.`,
         `Evidence gap check: ${firstOrFallback(scenario.expectedEvidence, "lane-specific evidence")} must be documented before determination.`,
         `Sequence check: ${(scenario.timelinePattern || []).slice(0, 3).join(" → ") || "timeline not provided"}.`
       ]),
@@ -121,6 +125,10 @@ function enrichScenarioTools(baseTools = {}, scenario, baseCase, toolkitTools, c
         {
           title: "Tool input / output contract",
           items: ioRows.map((item) => `${item.k}: ${item.v}`)
+        },
+        {
+          title: "Search directory / lookup keys",
+          items: searchDirectoryItems(customerProfile)
         },
         {
           title: "Matrix scenario context",
@@ -213,6 +221,8 @@ function mergeDocumentBuckets(baseDocuments = {}, scenarioDocuments = {}, custom
     ...(merged["Customer 360 / Lookup Records"] || []),
     "Customer 360 dossier",
     "Fictional profile lookup trail",
+    "Employee directory lookup packet",
+    "Employee prior/requested bank comparison",
     "Login/IP/device baseline comparison",
     ...(customerProfile.backgroundReportOutline || [])
   ]);
@@ -225,13 +235,20 @@ function flattenDocuments(documents = {}) {
 }
 
 function profileDocumentNames(customerProfile = {}) {
-  return uniqueList(["Customer 360 dossier", "Profile change event log", "Login/IP/device lookup trail", ...(customerProfile.backgroundReportOutline || [])]);
+  return uniqueList(["Customer 360 dossier", "Profile change event log", "Login/IP/device lookup trail", "Employee directory lookup packet", "Employee bank comparison packet", ...(customerProfile.backgroundReportOutline || [])]);
 }
 
 function reportSeedItems(customerProfile = {}) {
   const seeds = customerProfile.reportSeeds || [];
-  if (!seeds.length) return ["Customer profile lookup seeds pending."];
-  return seeds.map((seed) => `${seed.label}: ${seed.value}. ${seed.use}`);
+  const directorySeeds = customerProfile.searchDirectoryReportSeeds || [];
+  if (!seeds.length && !directorySeeds.length) return ["Customer profile lookup seeds pending."];
+  return [...seeds.map((seed) => `${seed.label}: ${seed.value}. ${seed.use}`), ...directorySeeds];
+}
+
+function searchDirectoryItems(customerProfile = {}) {
+  const entities = customerProfile.searchableEntities || [];
+  if (!entities.length) return ["Search directory has no employee/vendor-specific records for this lane. Use Customer 360 lookup keys only."];
+  return entities.slice(0, 10).map((entity) => `${entity.type}: ${entity.value}. ${entity.use}`);
 }
 
 function uniqueTimeline(events = []) {
