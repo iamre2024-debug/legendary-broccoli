@@ -2,10 +2,17 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import { REPORT_CENTER_GUARDRAIL, REPORT_CENTER_UPDATED_EVENT } from "../data/savedReportCenter.js";
 import { readWorkstationSnapshot, WORKSTATION_STORAGE_EVENT } from "../data/workstationRuntimeState.js";
+import { useNativePortalTargets } from "../hooks/useNativePortalTargets.js";
+
+const TIMELINE_PORTAL_SELECTORS = {
+  pageStack: [".faPagePanel .faStack", ".faPagePanel"]
+};
+const TIMELINE_TARGET_EVENTS = [REPORT_CENTER_UPDATED_EVENT, WORKSTATION_STORAGE_EVENT];
 
 export default function TimelineActionImpactRuntime() {
   const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
-  const [target, setTarget] = useState(() => findTarget());
+  const targets = useNativePortalTargets({ selectors: TIMELINE_PORTAL_SELECTORS, intervalMs: 700, events: TIMELINE_TARGET_EVENTS });
+  const target = targets.pageStack;
 
   const actions = useMemo(() => {
     const caseId = snapshot.activeCase?.id;
@@ -20,10 +27,7 @@ export default function TimelineActionImpactRuntime() {
   useEffect(() => {
     if (typeof window === "undefined") return undefined;
 
-    const refresh = () => {
-      setSnapshot(readWorkstationSnapshot());
-      setTarget(findTarget());
-    };
+    const refresh = () => setSnapshot(readWorkstationSnapshot());
 
     refresh();
     const interval = window.setInterval(refresh, 700);
@@ -93,11 +97,6 @@ function RuntimeAction({ action }) {
       )}
     </article>
   );
-}
-
-function findTarget() {
-  if (typeof document === "undefined") return null;
-  return document.querySelector(".faPagePanel .faStack") || document.querySelector(".faPagePanel");
 }
 
 function formatActionLabel(action = {}) {
