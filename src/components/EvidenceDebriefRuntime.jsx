@@ -40,6 +40,12 @@ export default function EvidenceDebriefRuntime() {
     };
   }, []);
 
+  useEffect(() => {
+    if (typeof document === "undefined") return undefined;
+    document.body.classList.toggle("faEvidenceDebriefReady", shouldShow);
+    return () => document.body.classList.remove("faEvidenceDebriefReady");
+  }, [shouldShow]);
+
   if (!shouldShow) return null;
 
   return createPortal(
@@ -156,5 +162,5 @@ function scoreReview({ matched, reviewed, laneTools, reports, justification, ind
 
 function findTarget() {
   if (typeof document === "undefined") return null;
-  return document.querySelector(".faPagePanel .faStack") || document.querySelector(".faPagePanel");
+  return document.querySelector(".faPagePanel");
 }
