@@ -3,7 +3,7 @@
 .faDocumentRequestNote {
   grid-column: 1 / -1;
   display: grid;
-  gap: 7px;
+  gap: 9px;
   margin-top: 2px;
 }
 
@@ -35,19 +35,54 @@
   box-shadow: 0 0 0 3px rgba(141, 232, 255, 0.08);
 }
 
+.faDocumentRequestSubmit,
 .faDocumentRequestRow button {
   grid-column: 1 / -1;
   width: 100%;
-  border: 1px solid rgba(141, 232, 255, 0.24);
+  border: 1px solid rgba(141, 232, 255, 0.38);
   border-radius: 16px;
   color: #fff;
-  background: linear-gradient(135deg, rgba(247, 87, 255, 0.24), rgba(60, 210, 255, 0.14));
-  padding: 11px 14px;
+  background: linear-gradient(135deg, rgba(247, 87, 255, 0.34), rgba(60, 210, 255, 0.22));
+  padding: 13px 14px;
+  font-weight: 800;
+  box-shadow: 0 0 22px rgba(141, 232, 255, 0.12);
+}
+
+.faDocumentRequestSubmit::after {
+  content: "Saves this note to the case file";
+  display: block;
+  margin-top: 4px;
+  color: rgba(244, 235, 255, 0.7);
+  font-size: 0.76rem;
+  font-weight: 500;
+}
+
+.faDocumentRequestSubmit:focus,
+.faDocumentRequestRow button:focus {
+  outline: none;
+  border-color: rgba(141, 232, 255, 0.62);
+  box-shadow: 0 0 0 3px rgba(141, 232, 255, 0.1), 0 0 24px rgba(247, 87, 255, 0.14);
+}
+
+.faDocumentRequestSaved {
+  margin: 0;
+  border: 1px solid rgba(132, 255, 203, 0.24);
+  border-radius: 14px;
+  color: #b9ffea;
+  background: rgba(63, 220, 176, 0.12);
+  padding: 9px 10px;
+  font-size: 0.86rem;
 }
 
 @media (max-width: 720px) {
   .faDocumentRequestNote textarea {
     min-height: 112px;
+    font-size: 1rem;
+  }
+
+  .faDocumentRequestSubmit,
+  .faDocumentRequestRow button {
+    min-height: 52px;
     font-size: 1rem;
   }
 }
