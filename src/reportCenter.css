@@ -1,0 +1,233 @@
+.faSavedReportCenter {
+  margin-top: 18px;
+  border-color: rgba(141, 232, 255, 0.28);
+  box-shadow: 0 24px 80px rgba(60, 210, 255, 0.12), inset 0 0 0 1px rgba(255, 255, 255, 0.04);
+}
+
+.faReportCenterHeader,
+.faReportCenterPreviewTop {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.faReportCenterHeader h3,
+.faReportCenterPreviewTop h4 {
+  margin: 4px 0 8px;
+}
+
+.faReportCenterHeader p,
+.faReportCenterPreviewTop p,
+.faReportCenterEmpty p,
+.faReportSourceSummary p,
+.faReportCenterGuardrail {
+  color: rgba(244, 235, 255, 0.74);
+}
+
+.faReportCenterHeader > strong {
+  display: grid;
+  min-width: 58px;
+  height: 58px;
+  place-items: center;
+  border-radius: 22px;
+  background: radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.22), rgba(141, 232, 255, 0.12));
+  box-shadow: 0 0 32px rgba(141, 232, 255, 0.18);
+}
+
+.faReportCenterStats,
+.faReportCenterLayout,
+.faReportCenterList,
+.faReportCenterSections,
+.faReportCenterMeta,
+.faRecentOtherReports {
+  display: grid;
+  gap: 12px;
+}
+
+.faReportCenterStats {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 16px 0;
+}
+
+.faReportCenterStats span,
+.faReportCenterEmpty,
+.faSavedReportCard,
+.faReportCenterPreview,
+.faReportSourceSummary,
+.faReportCenterSections section {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 20px;
+  padding: 14px;
+  background: rgba(255, 255, 255, 0.045);
+}
+
+.faReportCenterStats b {
+  display: block;
+  color: #fff;
+  font-size: 1.22rem;
+}
+
+.faReportCenterLayout {
+  grid-template-columns: minmax(240px, 0.52fr) minmax(0, 1fr);
+  align-items: start;
+}
+
+.faReportCenterSubhead {
+  color: #8de8ff;
+  font-size: 0.72rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.faSavedReportCard {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+}
+
+.faSavedReportCard[data-tone="good"] {
+  border-color: rgba(100, 255, 198, 0.3);
+}
+
+.faSavedReportCard[data-tone="review"] {
+  border-color: rgba(255, 210, 130, 0.28);
+}
+
+.faSavedReportCard > button:first-child,
+.faRecentOtherReports button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  text-align: left;
+  cursor: pointer;
+}
+
+.faSavedReportCard span {
+  display: inline-flex;
+  width: fit-content;
+  border-radius: 999px;
+  color: #ffe0a6;
+  background: rgba(255, 190, 92, 0.14);
+  padding: 5px 8px;
+  font-size: 0.74rem;
+  margin-bottom: 8px;
+}
+
+.faSavedReportCard strong {
+  display: block;
+  margin-bottom: 5px;
+}
+
+.faSavedReportCard small {
+  display: block;
+  color: rgba(244, 235, 255, 0.66);
+}
+
+.faReportDelete {
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 999px;
+  color: #ffc1dd;
+  background: rgba(255, 92, 148, 0.1);
+  padding: 8px 10px;
+  cursor: pointer;
+}
+
+.faRecentOtherReports {
+  margin-top: 4px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 12px;
+}
+
+.faRecentOtherReports button {
+  border: 1px solid rgba(255, 255, 255, 0.09);
+  border-radius: 16px;
+  color: rgba(244, 235, 255, 0.82);
+  background: rgba(255, 255, 255, 0.035);
+  padding: 10px 12px;
+}
+
+.faReportCenterPreview {
+  background: linear-gradient(145deg, rgba(26, 19, 56, 0.86), rgba(11, 11, 26, 0.78));
+}
+
+.faReportCenterPreviewTop > strong {
+  width: fit-content;
+  border-radius: 999px;
+  padding: 7px 11px;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.faReportCenterPreview[data-tone="good"] .faReportCenterPreviewTop > strong {
+  color: #b9ffea;
+  background: rgba(63, 220, 176, 0.14);
+}
+
+.faReportCenterPreview[data-tone="review"] .faReportCenterPreviewTop > strong {
+  color: #ffe0a6;
+  background: rgba(255, 190, 92, 0.14);
+}
+
+.faReportCenterMeta {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 14px 0;
+}
+
+.faReportCenterMeta span {
+  border-radius: 999px;
+  color: rgba(244, 235, 255, 0.78);
+  background: rgba(255, 255, 255, 0.06);
+  padding: 8px 10px;
+  font-size: 0.82rem;
+}
+
+.faReportSourceSummary {
+  margin-bottom: 14px;
+}
+
+.faReportSourceSummary strong {
+  display: block;
+  margin: 6px 0;
+}
+
+.faReportCenterSections {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.faReportCenterSections h5 {
+  margin: 0 0 9px;
+}
+
+.faReportCenterSections ul {
+  margin: 0;
+  padding-left: 18px;
+  color: rgba(244, 235, 255, 0.76);
+}
+
+.faReportCenterSections li + li {
+  margin-top: 7px;
+}
+
+.faReportCenterGuardrail {
+  margin: 14px 0 0;
+  border-left: 3px solid rgba(141, 232, 255, 0.55);
+  padding-left: 12px;
+}
+
+@media (max-width: 980px) {
+  .faReportCenterHeader,
+  .faReportCenterPreviewTop {
+    flex-direction: column;
+  }
+
+  .faReportCenterStats,
+  .faReportCenterLayout,
+  .faSavedReportCard,
+  .faReportCenterMeta,
+  .faReportCenterSections {
+    grid-template-columns: 1fr;
+  }
+}
