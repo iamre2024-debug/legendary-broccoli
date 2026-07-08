@@ -5,6 +5,7 @@ import { appendAction } from "../data/workstationRuntimeState.js";
 
 export default function DocumentRequestDock({ activeCase }) {
   const [loggedRequests, setLoggedRequests] = useState({});
+  const [requestNotes, setRequestNotes] = useState({});
   if (!activeCase) return null;
 
   const rail = buildCreditDecisionRail(activeCase);
@@ -15,6 +16,7 @@ export default function DocumentRequestDock({ activeCase }) {
 
   function logRequest(row) {
     if (!activeCase?.id || !row?.id) return;
+    const investigatorNote = (requestNotes[row.id] || "").trim();
     appendAction(activeCase.id, {
       actionId: `${activeCase.id}-${row.id}-${Date.now()}`,
       performedAt: new Date().toISOString(),
@@ -22,15 +24,21 @@ export default function DocumentRequestDock({ activeCase }) {
       outcome: `Requested ${row.name}`,
       xpDelta: 2,
       confidenceDelta: 0.01,
-      notes: row.reason,
+      notes: investigatorNote || row.reason,
       metadata: {
         label: row.name,
         status: row.status,
         due: row.due,
-        source: creditMode ? "Credit doc rail" : "Evidence request rail"
+        source: creditMode ? "Credit doc rail" : "Evidence request rail",
+        investigatorNote,
+        requestReason: row.reason
       }
     });
     setLoggedRequests((current) => ({ ...current, [row.id]: true }));
+  }
+
+  function updateNote(rowId, note) {
+    setRequestNotes((current) => ({ ...current, [rowId]: note }));
   }
 
   return (
@@ -49,6 +57,14 @@ export default function DocumentRequestDock({ activeCase }) {
             </div>
             <span>{row.status}</span>
             <em>{row.due}</em>
+            <label className="faDocumentRequestNote">
+              <small>Investigator note</small>
+              <textarea
+                value={requestNotes[row.id] || ""}
+                onChange={(event) => updateNote(row.id, event.target.value)}
+                placeholder="Add why this document is needed before logging the request..."
+              />
+            </label>
             <button type="button" onClick={() => logRequest(row)}>{loggedRequests[row.id] ? "Logged ✓" : "Log request"}</button>
           </article>
         ))}
