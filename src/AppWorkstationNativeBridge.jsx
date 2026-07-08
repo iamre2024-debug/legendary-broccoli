@@ -7,6 +7,7 @@ import SavedReportCenterRuntime from "./components/SavedReportCenterRuntime.jsx"
 import TimelineActionImpactRuntime from "./components/TimelineActionImpactRuntime.jsx";
 import CaseReportBuilderRuntime from "./components/CaseReportBuilderRuntime.jsx";
 import EvidenceDebriefRuntime from "./components/EvidenceDebriefRuntime.jsx";
+import ToolFocusPolishRuntime from "./components/ToolFocusPolishRuntime.jsx";
 import "./nativePanelRuntime.css";
 import "./lookupReportLauncher.css";
 import "./reportCenter.css";
@@ -17,6 +18,7 @@ import "./timelineActionImpactRuntime.css";
 import "./documentRequestNotes.css";
 import "./caseReportBuilder.css";
 import "./evidenceDebrief.css";
+import "./toolFocusPolish.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
@@ -30,6 +32,7 @@ export default function AppWorkstationNativeBridge() {
       <TimelineActionImpactRuntime />
       <CaseReportBuilderRuntime />
       <EvidenceDebriefRuntime />
+      <ToolFocusPolishRuntime />
     </>
   );
 }
