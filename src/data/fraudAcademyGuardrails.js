@@ -7,6 +7,7 @@ import {
   getCreditDeterminationOptions,
   isCreditDecisionRailCase
 } from "./creditDecisionRail.js";
+import { validateCustomerToolHistoryCoverage } from "./customerToolHistory.js";
 
 export const SOURCE_HIERARCHY = [
   {
@@ -64,6 +65,7 @@ export const CORE_BUILD_RULES = [
   "Credit risk and business bust-out must not use pay / deny reimbursement wording as their primary decision rail.",
   "Customer 360 is the permanent dossier; search-style lookups belong in the lane tools.",
   "Reports are detailed internal-bank-style previews for report-heavy searches, while tools can remain snapshot + search workspaces.",
+  "Every generated tool should carry Customer 360 relationship, profile-change, prior-claim, and lookup context.",
   "The UI should stay professional, mobile-first, neon, bubbly, and investigator-workstation flavored."
 ];
 
@@ -90,6 +92,7 @@ const FORBIDDEN_CREDIT_DECISION_TERMS = [
 export function validateFraudAcademyGuardrails() {
   const warnings = [];
   const missingLanes = REQUIRED_LANES.filter((lane) => !CLAIM_FAMILIES[lane]);
+  const customerHistoryCoverage = validateCustomerToolHistoryCoverage(toolNavByLane);
 
   if (missingLanes.length) {
     warnings.push(`Missing required lane families: ${missingLanes.join(", ")}`);
@@ -132,6 +135,10 @@ export function validateFraudAcademyGuardrails() {
     }
   });
 
+  if (!customerHistoryCoverage.ok) {
+    warnings.push(`Customer profile history missing from tool IDs: ${customerHistoryCoverage.missing.join(", ")}`);
+  }
+
   return {
     ok: warnings.length === 0,
     warnings,
@@ -139,7 +146,8 @@ export function validateFraudAcademyGuardrails() {
     sourceHierarchy: SOURCE_HIERARCHY.map((source) => source.name),
     ruleCount: CORE_BUILD_RULES.length,
     laneCount: Object.keys(CLAIM_FAMILIES).length,
-    toolLaneCount: Object.keys(toolNavByLane).length
+    toolLaneCount: Object.keys(toolNavByLane).length,
+    customerHistoryCoverage
   };
 }
 
