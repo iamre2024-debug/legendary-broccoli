@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import { createPortal } from "react-dom";
 import Customer360DossierPanel from "./Customer360DossierPanel.jsx";
 import DeterminationPanel from "./DeterminationPanel.jsx";
@@ -8,17 +8,16 @@ import RightRailPanel from "./RightRailPanel.jsx";
 import SavedReportCenterPanel from "./SavedReportCenterPanel.jsx";
 import { saveState } from "../utils/storage.js";
 import { useNativeBodyClasses, useNativePortalTargets } from "../hooks/useNativePortalTargets.js";
+import { useWorkstationSnapshot } from "../hooks/useWorkstationSnapshot.js";
 import {
   appendAction,
   buildActiveCaseState,
-  readWorkstationSnapshot,
-  WORKSTATION_STORAGE_EVENT,
   workstationKey,
   writeCaseMap as writeRuntimeCaseMap
 } from "../data/workstationRuntimeState.js";
 
 export default function NativePanelRuntime() {
-  const [snapshot, setSnapshot] = useState(() => readWorkstationSnapshot());
+  const { snapshot, refresh: refreshSnapshot } = useWorkstationSnapshot({ intervalMs: 600 });
   const targets = useNativePortalTargets();
 
   const caseState = useMemo(() => buildActiveCaseState(snapshot), [snapshot]);
@@ -31,25 +30,6 @@ export default function NativePanelRuntime() {
   }), [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
   useNativeBodyClasses(nativeClassMap);
-
-  useEffect(() => {
-    if (typeof window === "undefined") return undefined;
-
-    const refresh = () => setSnapshot(readWorkstationSnapshot());
-
-    refresh();
-    const interval = window.setInterval(refresh, 600);
-    window.addEventListener("click", refresh, true);
-    window.addEventListener("storage", refresh);
-    window.addEventListener(WORKSTATION_STORAGE_EVENT, refresh);
-
-    return () => {
-      window.clearInterval(interval);
-      window.removeEventListener("click", refresh, true);
-      window.removeEventListener("storage", refresh);
-      window.removeEventListener(WORKSTATION_STORAGE_EVENT, refresh);
-    };
-  }, []);
 
   if (!snapshot.activeCase) return null;
 
@@ -76,9 +56,9 @@ export default function NativePanelRuntime() {
             activeCase={snapshot.activeCase}
             determination={caseState.determination}
             justification={caseState.justification}
-            setDetermination={(value) => writeCaseMap("determinations", snapshot.activeCase.id, value, setSnapshot)}
-            setJustification={(value) => writeCaseMap("justifications", snapshot.activeCase.id, value, setSnapshot)}
-            completeCase={() => completeCase(snapshot, caseState.determination, setSnapshot)}
+            setDetermination={(value) => writeCaseMap("determinations", snapshot.activeCase.id, value, refreshSnapshot)}
+            setJustification={(value) => writeCaseMap("justifications", snapshot.activeCase.id, value, refreshSnapshot)}
+            completeCase={() => completeCase(snapshot, caseState.determination, refreshSnapshot)}
           />
         </div>,
         targets.pagePanel
@@ -115,12 +95,12 @@ export default function NativePanelRuntime() {
   );
 }
 
-function writeCaseMap(name, caseId, value, setSnapshot) {
+function writeCaseMap(name, caseId, value, refreshSnapshot) {
   writeRuntimeCaseMap(name, caseId, value);
-  setSnapshot(readWorkstationSnapshot());
+  refreshSnapshot();
 }
 
-function completeCase(snapshot, determination, setSnapshot) {
+function completeCase(snapshot, determination, refreshSnapshot) {
   const activeCase = snapshot.activeCase;
   if (!activeCase) return;
 
@@ -139,7 +119,7 @@ function completeCase(snapshot, determination, setSnapshot) {
   saveState(workstationKey("completed"), completed);
   appendAction(activeCase.id, action);
   saveState(workstationKey("page"), "debrief");
-  setSnapshot(readWorkstationSnapshot());
+  refreshSnapshot();
 
   if (typeof window !== "undefined") {
     window.setTimeout(() => window.location.reload(), 120);
