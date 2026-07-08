@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createPortal } from "react-dom";
 import Customer360DossierPanel from "./Customer360DossierPanel.jsx";
 import DeterminationPanel from "./DeterminationPanel.jsx";
+import DocumentRequestWorkflowPanel from "./DocumentRequestWorkflowPanel.jsx";
 import RightRailPanel from "./RightRailPanel.jsx";
 import { toolNavByLane } from "../data/fraudAcademyEngine.js";
 import { loadState, saveState } from "../utils/storage.js";
@@ -42,15 +43,18 @@ export default function NativePanelRuntime() {
     const showRail = Boolean(targets.grid && snapshot.activeCase);
     const showDetermination = Boolean(targets.pagePanel && snapshot.page === "determination" && snapshot.activeCase);
     const showCustomer360 = Boolean(targets.pagePanel && snapshot.page === "customer360" && snapshot.activeCase);
+    const showDocumentWorkflow = Boolean(targets.pagePanel && snapshot.page === "summary" && snapshot.activeCase);
 
     document.body.classList.toggle("faNativeRailReady", showRail);
     document.body.classList.toggle("faNativeDeterminationReady", showDetermination);
     document.body.classList.toggle("faNativeCustomer360Ready", showCustomer360);
+    document.body.classList.toggle("faNativeDocumentWorkflowReady", showDocumentWorkflow);
 
     return () => {
       document.body.classList.remove("faNativeRailReady");
       document.body.classList.remove("faNativeDeterminationReady");
       document.body.classList.remove("faNativeCustomer360Ready");
+      document.body.classList.remove("faNativeDocumentWorkflowReady");
     };
   }, [targets.grid, targets.pagePanel, snapshot.activeCase, snapshot.page]);
 
@@ -97,11 +101,21 @@ export default function NativePanelRuntime() {
       )
     : null;
 
+  const documentWorkflow = targets.pagePanel && snapshot.page === "summary"
+    ? createPortal(
+        <div className="faNativeDocumentWorkflowSlot" aria-label="Document request workflow slot">
+          <DocumentRequestWorkflowPanel activeCase={snapshot.activeCase} />
+        </div>,
+        targets.pagePanel
+      )
+    : null;
+
   return (
     <>
       {rail}
       {determination}
       {customer360}
+      {documentWorkflow}
     </>
   );
 }
