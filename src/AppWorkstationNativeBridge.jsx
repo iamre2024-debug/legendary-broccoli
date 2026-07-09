@@ -1,4 +1,5 @@
 import "./data/phase2AStabilizedUpgrades.js";
+import "./data/phase2ALinkNavPatch.js";
 import AppWorkstationV3 from "./AppWorkstationV3.jsx";
 import MatrixGenerateRuntime from "./components/MatrixGenerateRuntime.jsx";
 import NativePanelRuntime from "./components/NativePanelRuntime.jsx";
