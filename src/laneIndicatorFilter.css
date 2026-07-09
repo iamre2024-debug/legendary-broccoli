@@ -1,0 +1,65 @@
+.faLaneIndicatorGuide {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border-color: rgba(141, 232, 255, 0.18);
+  background: linear-gradient(135deg, rgba(141, 232, 255, 0.08), rgba(247, 87, 255, 0.08));
+}
+
+.faLaneIndicatorGuide h3 {
+  margin: 4px 0 8px;
+}
+
+.faLaneIndicatorGuide p {
+  margin: 0;
+  color: rgba(244, 235, 255, 0.76);
+  line-height: 1.45;
+}
+
+.faLaneIndicatorStats {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(96px, 1fr));
+  gap: 10px;
+  min-width: 220px;
+}
+
+.faLaneIndicatorStats span {
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-radius: 18px;
+  padding: 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.faLaneIndicatorStats strong,
+.faLaneIndicatorStats small {
+  display: block;
+}
+
+.faLaneIndicatorStats strong {
+  color: #fff7ff;
+  font-size: 1.35rem;
+}
+
+.faLaneIndicatorStats small {
+  color: #8de8ff;
+  font-size: 0.74rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.faCheckboxRow[hidden] {
+  display: none !important;
+}
+
+@media (max-width: 760px) {
+  .faLaneIndicatorGuide {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .faLaneIndicatorStats {
+    min-width: 0;
+    grid-template-columns: 1fr 1fr;
+  }
+}
