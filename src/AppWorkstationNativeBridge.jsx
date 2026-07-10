@@ -25,6 +25,7 @@ import "./evidenceDebrief.css";
 import "./toolFocusPolish.css";
 import "./laneIndicatorFilter.css";
 import "./bibleWorkspaceCompletion.css";
+import "./evidenceDebriefScorecard.css";
 
 export default function AppWorkstationNativeBridge() {
   return (
