@@ -31,6 +31,68 @@ export const TOOL_CATEGORIES = {
 const SNAPSHOT_ONLY = "snapshot";
 const REPORT_ELIGIBLE = "report-eligible";
 
+const SEARCH_BEHAVIOR_DEFAULTS = {
+  timeline: { requiresSearch: "no", revealMode: "direct", searchKeys: ["time", "event", "caseId"] },
+  identity: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["trainingId", "nameDob", "phone", "email", "address", "destinationId", "businessName"] },
+  financial: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["amount", "date", "merchant", "account", "category", "caseId"] },
+  technical: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["ip", "deviceId", "domain", "sessionId", "caseId"] },
+  narrative: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["statement", "source", "document", "policy", "caseId"] }
+};
+
+const TOOL_BIBLE_OVERRIDES = {
+  login: { requiresSearch: "no", revealMode: "direct", searchKeys: ["loginTime", "location", "deviceId", "sessionId"], primaryQuestion: "Who logged in, when, and from where?" },
+  session: { requiresSearch: "no", revealMode: "direct", searchKeys: ["sessionId", "action", "timestamp", "deviceId"], primaryQuestion: "What actions occurred after authentication?" },
+  device: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["deviceId", "fingerprint", "trustedDevice", "linkedProfile"], primaryQuestion: "What device was used, and does it match normal device behavior?" },
+  ip: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["ip", "geo", "asn", "sessionId", "linkedProfile"], primaryQuestion: "Where did the connection originate, and has it been seen elsewhere?" },
+  mfa: { requiresSearch: "no", revealMode: "direct", searchKeys: ["otp", "push", "mfaDestination", "timestamp"], primaryQuestion: "What MFA challenge or destination was used during the event sequence?" },
+  financial: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["amount", "deposit", "cashActivity", "linkedAccount", "merchant"], primaryQuestion: "Does the money make sense?" },
+  identity: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["trainingId", "nameDob", "phone", "email", "address", "businessName"], primaryQuestion: "Does this identity history support who they claim to be?" },
+  link: { requiresSearch: "yes", revealMode: "crossReference", searchKeys: ["trainingId", "phone", "email", "deviceId", "ip", "address", "destinationId", "merchant", "businessName", "adminUser"], primaryQuestion: "What repeated data links connect this case to other profiles, destinations, businesses, or cases?" },
+  transaction: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["transactionId", "merchant", "amount", "date", "descriptor", "channel"], primaryQuestion: "What financial activity actually occurred?" },
+  authorization: { requiresSearch: "no", revealMode: "direct", searchKeys: ["authCode", "entryMode", "token", "avs", "cvv", "amount"], primaryQuestion: "How was the payment authorized or accepted?" },
+  merchant: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["merchant", "descriptor", "receipt", "refund", "policy"], primaryQuestion: "What does the merchant evidence prove for this reason code?" },
+  merchantHistory: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["merchant", "category", "priorUse", "claimHistory"], primaryQuestion: "Does merchant history fit or conflict with the customer story?" },
+  priorClaims: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["claimType", "merchant", "date", "outcome"], primaryQuestion: "Is there a prior claim pattern relevant to this case?" },
+  reasonCode: { requiresSearch: "no", revealMode: "direct", searchKeys: ["reasonCode", "policy", "requiredEvidence"], primaryQuestion: "Which evidence matters for this dispute lane?" },
+  receipt: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["receipt", "invoice", "amount", "fee", "tip"], primaryQuestion: "Does the receipt or invoice support the billing claim?" },
+  fulfillment: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["delivery", "return", "refund", "tracking"], primaryQuestion: "Was the good, service, return, or refund completed as claimed?" },
+  terms: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["policy", "terms", "refund", "cancellation"], primaryQuestion: "What policy or disclosure controls this non-fraud dispute?" },
+  payrollProfile: { primaryQuestion: "Does the payroll run fit normal business payroll behavior?" },
+  employee: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["employeeId", "phone", "email", "priorBank", "destinationId"], primaryQuestion: "Is the employee relationship and destination change consistent with trusted records?" },
+  bank: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["destinationId", "bankCode", "maskedAccount", "owner", "priorUse", "recoverability"], primaryQuestion: "Is this destination account trustworthy, and has it been used before?" },
+  changeRequest: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["requester", "channel", "replyTo", "approval", "timestamp"], primaryQuestion: "Who requested the change, through what channel, and was it verified?" },
+  admin: { requiresSearch: "no", revealMode: "direct", searchKeys: ["adminUser", "login", "mfa", "action", "ip"], primaryQuestion: "What admin action changed the account, payroll, vendor, or business record?" },
+  callback: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["trustedPhone", "contact", "attempt", "outcome"], primaryQuestion: "Was verification completed through trusted contact information?" },
+  payrollRun: { requiresSearch: "no", revealMode: "direct", searchKeys: ["runId", "releaseWindow", "hold", "recoverability"], primaryQuestion: "Can the payroll run still be paused, stopped, or recovered?" },
+  emailHeaders: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["from", "replyTo", "domain", "spf", "dkim", "dmarc"], primaryQuestion: "Do the email headers support the sender identity or a spoof/look-alike concern?" },
+  domain: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["domain", "registrar", "age", "mx", "reputation"], primaryQuestion: "Is the domain consistent with the trusted vendor or business relationship?" },
+  sender: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["sender", "tone", "mailbox", "priorRequest"], primaryQuestion: "Does sender behavior fit the known relationship and request history?" },
+  beneficiary: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["beneficiary", "destinationId", "bankCode", "owner", "priorUse"], primaryQuestion: "Does the beneficiary destination fit the trusted vendor or payment history?" },
+  paymentTimeline: { requiresSearch: "no", revealMode: "direct", searchKeys: ["payment", "approval", "hold", "callback", "release"], primaryQuestion: "Where is the payment in the request, hold, release, or recovery sequence?" },
+  income: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["income", "deposit", "paystub", "employer"], primaryQuestion: "Is claimed income supported by verified evidence?" },
+  employment: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["employer", "employee", "tenure", "status"], primaryQuestion: "Can employment be verified through a trusted source?" },
+  dti: { requiresSearch: "no", revealMode: "direct", searchKeys: ["income", "debt", "dti", "monthlyPayment"], primaryQuestion: "Does ability-to-repay change when verified income is used?" },
+  creditReport: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["tradeline", "utilization", "inquiry", "derogatory", "scoreBand"], primaryQuestion: "What does the credit file show about credit risk and repayment stress?" },
+  bankStatements: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["statement", "deposit", "balance", "overdraft", "returnedItem"], primaryQuestion: "Do bank statements support income, revenue, and cash-flow claims?" },
+  paymentHistory: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["payment", "late", "autopay", "returnedPayment"], primaryQuestion: "Does payment history support current credit exposure?" },
+  utilization: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["utilization", "balance", "limit", "trend"], primaryQuestion: "Is revolving credit use stable or stressed?" },
+  inquiries: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["inquiry", "newAccount", "application", "date"], primaryQuestion: "Is recent credit-seeking velocity relevant to this review?" },
+  kyb: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["businessName", "ein", "address", "owner", "registration"], primaryQuestion: "Does the business exist, operate, and fit the requested relationship or exposure?" },
+  businessRegistration: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["businessName", "state", "filing", "registeredAgent", "status"], primaryQuestion: "Does registration evidence support the claimed business identity?" },
+  ownerKyc: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["owner", "trainingId", "phone", "email", "address"], primaryQuestion: "Does owner identity support the stated control of the business?" },
+  revenue: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["revenue", "deposit", "cashFlow", "draw", "nsf"], primaryQuestion: "Does verified revenue support the requested business exposure?" },
+  profileVerify: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["trainingId", "nameDob", "address", "email", "deviceId"], primaryQuestion: "Does the application profile match identity and account-opening evidence?" },
+  driverLicense: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["license", "ocr", "barcode", "address", "expiration"], primaryQuestion: "Does the ID document support the application identity and address?" },
+  selfie: { requiresSearch: "no", revealMode: "direct", searchKeys: ["liveness", "faceMatch", "captureQuality"], primaryQuestion: "Does the selfie or liveness check support the applicant identity control?" },
+  address: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["address", "utility", "usps", "firstSeen", "mailDrop"], primaryQuestion: "Can the address be verified and connected to the applicant or customer?" },
+  phone: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["phone", "carrier", "lineType", "owner", "port"], primaryQuestion: "Does the phone number support the identity and contact history?" },
+  email: { requiresSearch: "yes", revealMode: "lookup", searchKeys: ["email", "domain", "age", "breach", "profile"], primaryQuestion: "Does the email address support the identity and account history?" },
+  positivePay: { requiresSearch: "no", revealMode: "direct", searchKeys: ["checkNumber", "payee", "amount", "issuedFile"], primaryQuestion: "Does the item match the issued check file?" },
+  checkImage: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["micr", "payee", "amount", "signature", "alteration"], primaryQuestion: "Does the check image support or conflict with the issued-item record?" },
+  endorsement: { requiresSearch: "partial", revealMode: "crossReference", searchKeys: ["endorsement", "depositBank", "endorser", "destinationId"], primaryQuestion: "Where did the item go, and does the endorsement fit the payee story?" },
+  velocity: { requiresSearch: "no", revealMode: "filteredRecord", searchKeys: ["velocity", "amount", "frequency", "newPayee", "date"], primaryQuestion: "Is payment velocity outside normal business or customer behavior?" }
+};
+
 export const toolRegistry = {
   login: registryTool("login", "Login History", "timeline", "Compares login timing, location, success/failure path, and access sequence.", REPORT_ELIGIBLE),
   session: registryTool("session", "Session History", "timeline", "Shows session events and the order of account actions.", REPORT_ELIGIBLE),
@@ -214,6 +276,11 @@ export function buildToolEvidence({ toolId, lane, caseId, tool = {} }) {
     lens: definition.lens,
     outputMode: definition.outputMode,
     reportEligible: definition.outputMode === REPORT_ELIGIBLE,
+    requiresSearch: definition.requiresSearch,
+    revealMode: definition.revealMode,
+    searchKeys: definition.searchKeys,
+    primaryQuestion: definition.primaryQuestion,
+    lanes: definition.lanes,
     summary: tool.summary || definition.evidenceRole,
     evidenceRole: definition.evidenceRole,
     rows,
@@ -287,7 +354,33 @@ export function assertToolRegistryCoverage() {
   return { totalTools: configuredIds.size, missing };
 }
 
+export function validateToolRegistryBibleMetadata() {
+  const requiredFields = ["requiresSearch", "revealMode", "searchKeys", "primaryQuestion", "lanes"];
+  const missing = [];
+  const invalid = [];
+
+  Object.values(toolRegistry).forEach((definition) => {
+    requiredFields.forEach((field) => {
+      if (!(field in definition)) missing.push(`${definition.id}.${field}`);
+    });
+
+    if (!Array.isArray(definition.searchKeys) || definition.searchKeys.length === 0) invalid.push(`${definition.id}.searchKeys`);
+    if (!Array.isArray(definition.lanes) || definition.lanes.length === 0) invalid.push(`${definition.id}.lanes`);
+    if (!["yes", "no", "partial"].includes(definition.requiresSearch)) invalid.push(`${definition.id}.requiresSearch`);
+    if (!["direct", "lookup", "crossReference", "filteredRecord"].includes(definition.revealMode)) invalid.push(`${definition.id}.revealMode`);
+  });
+
+  return {
+    ok: missing.length === 0 && invalid.length === 0,
+    missing,
+    invalid,
+    checkedToolCount: Object.keys(toolRegistry).length
+  };
+}
+
 function registryTool(id, title, category, evidenceRole, outputMode = SNAPSHOT_ONLY) {
+  const metadata = buildBibleMetadata(id, category);
+
   return {
     id,
     title,
@@ -296,8 +389,30 @@ function registryTool(id, title, category, evidenceRole, outputMode = SNAPSHOT_O
     lens: TOOL_CATEGORIES[category]?.lens || "Evidence review",
     template: TOOL_CATEGORIES[category]?.template || "NarrativeToolTemplate",
     evidenceRole,
-    outputMode
+    outputMode,
+    ...metadata
   };
+}
+
+function buildBibleMetadata(id, category) {
+  const defaults = SEARCH_BEHAVIOR_DEFAULTS[category] || SEARCH_BEHAVIOR_DEFAULTS.narrative;
+  const override = TOOL_BIBLE_OVERRIDES[id] || {};
+
+  return {
+    requiresSearch: override.requiresSearch || defaults.requiresSearch,
+    revealMode: override.revealMode || defaults.revealMode,
+    searchKeys: override.searchKeys || defaults.searchKeys,
+    primaryQuestion: override.primaryQuestion || `What does ${readable(id)} answer for this claim lane?`,
+    lanes: lanesForTool(id)
+  };
+}
+
+function lanesForTool(toolId) {
+  const lanes = Object.entries(toolNavByLane)
+    .filter(([, tools]) => tools.some((tool) => tool.id === toolId))
+    .map(([lane]) => lane);
+
+  return lanes.length ? lanes : ["UNASSIGNED"];
 }
 
 function normalizeEvidenceRow(label, value = "Not provided", flag = "neutral") {
